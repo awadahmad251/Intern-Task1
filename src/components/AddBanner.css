@@ -1,0 +1,169 @@
+.abn-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.abn-modal {
+  background: #ffffff;
+  width: 340px;
+  border-radius: 12px;
+  padding: 22px 22px 0 22px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.22);
+}
+
+.abn-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 16px 0;
+}
+
+.abn-thumb-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1a1a1a;
+  margin: 0 0 10px 0;
+}
+
+.abn-upload-box {
+  border: 1.5px dashed #d8d8d8;
+  border-radius: 10px;
+  padding: 22px 16px 18px 16px;
+  text-align: center;
+  background: #fafafa;
+  margin-bottom: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.abn-upload-box:hover {
+  border-color: #e07b54;
+}
+
+.abn-upload-icon {
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: center;
+}
+
+.abn-upload-text {
+  font-size: 13px;
+  color: #444;
+  margin: 0 0 4px 0;
+}
+
+.abn-upload-link {
+  color: #e07b54;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.abn-upload-hint {
+  font-size: 11.5px;
+  color: #aaa;
+  margin: 0;
+}
+
+.abn-input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #ececec;
+  border-radius: 8px;
+  padding: 11px 14px;
+  font-size: 13px;
+  color: #333;
+  background: #f6f6f6;
+  outline: none;
+  margin-bottom: 12px;
+  font-family: inherit;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.abn-input::placeholder {
+  color: #bbb;
+}
+
+.abn-input:focus {
+  border-color: #e07b54;
+  background: #fff;
+}
+
+.abn-select-wrap {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.abn-select {
+  width: 100%;
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid #ececec;
+  border-radius: 8px;
+  padding: 11px 36px 11px 14px;
+  font-size: 13px;
+  color: #bbb;
+  background: #f6f6f6;
+  outline: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.abn-select:focus {
+  border-color: #e07b54;
+  background: #fff;
+}
+
+.abn-select option {
+  color: #333;
+}
+
+.abn-select-arrow {
+  position: absolute;
+  right: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
+.abn-footer {
+  display: flex;
+  gap: 10px;
+  padding: 0 0 18px 0;
+}
+
+.abn-cancel-btn {
+  flex: 1;
+  padding: 12px 0;
+  border: none;
+  border-radius: 8px;
+  background: #f0f0f0;
+  color: #555;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.abn-save-btn {
+  flex: 1;
+  padding: 12px 0;
+  border: none;
+  border-radius: 8px;
+  background: #ff5a2c;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}

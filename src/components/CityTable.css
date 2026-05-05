@@ -1,0 +1,97 @@
+.cities-table-wrap {
+  background: transparent;
+}
+
+.cities-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 10px;
+  font-size: 13px;
+}
+
+.cities-table th {
+  text-align: left;
+  padding: 10px 15px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #888;
+  white-space: nowrap;
+}
+
+.cities-table td {
+  padding: 15px;
+  color: #333;
+  vertical-align: middle;
+  background-color: #fff;
+  border-top: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.cities-table tr {
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.cities-table td:first-child {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+  border-left: 1px solid #f0f0f0;
+}
+
+.cities-table td:last-child {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  border-right: 1px solid #f0f0f0;
+}
+
+.cities-date {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cities-time {
+  color: #aaa;
+  font-size: 12px;
+}
+
+.cities-dots {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  color: #888;
+}
+
+.cities-dots:hover {
+  background: #f2f2f2;
+}
+
+.custom-checkbox {
+  width: 20px;
+  height: 20px;
+  background-color: #fff;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.custom-checkbox.checked {
+  background-color: #333;
+  border-color: #333;
+}
+
+.custom-checkbox .tick {
+  color: #fff;
+  visibility: hidden;
+}
+
+.custom-checkbox.checked .tick {
+  visibility: visible;
+}

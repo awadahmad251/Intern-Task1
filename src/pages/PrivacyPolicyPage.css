@@ -1,0 +1,167 @@
+.policy-page {
+  display: flex;
+  background-color: #f7f7f7;
+  min-height: 100vh;
+}
+
+.policy-main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: #f5f5f5;
+}
+
+.policy-container {
+  flex: 1;
+  padding: 16px 24px 24px;
+}
+
+.policy-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.policy-heading {
+  margin: 0;
+  font-size: 22px;
+  color: #151515;
+  font-weight: 700;
+}
+
+.policy-edit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  background: #ffe0d4;
+  color: #ff6a3d;
+  cursor: pointer;
+  font-size: 12.5px;
+  font-family: inherit;
+  width: auto !important;
+  min-width: 0;
+}
+
+.policy-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 16px 18px 18px;
+  min-height: calc(100vh - 145px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.policy-card h2 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  color: #1a1a1a;
+  font-weight: 700;
+}
+
+.policy-card p,
+.policy-modal-preview p {
+  margin: 0 0 8px;
+  font-size: 12.5px;
+  line-height: 1.35;
+  color: #202020;
+}
+
+.policy-block {
+  margin-top: 10px;
+}
+
+.policy-block h3,
+.policy-modal-preview h3 {
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.policy-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  padding: 24px;
+}
+
+.policy-modal {
+  width: 460px;
+  max-width: 94vw;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 18px 38px rgba(0, 0, 0, 0.28);
+  overflow: hidden;
+}
+
+.policy-modal-title {
+  padding: 14px 16px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #111;
+}
+
+.policy-modal-body {
+  padding: 0 10px 10px;
+}
+
+.policy-modal-preview {
+  background: #f2f4f7;
+  border: 1px solid #dde2e8;
+  border-radius: 5px;
+  padding: 12px 12px 14px;
+  max-height: 420px;
+  overflow: auto;
+}
+
+.policy-modal-preview h2 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.policy-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 10px 12px;
+}
+
+.policy-cancel-btn,
+.policy-save-btn {
+  min-width: 94px;
+  height: 32px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: inherit;
+}
+
+.policy-cancel-btn {
+  background: #efefef;
+  color: #444;
+}
+
+.policy-save-btn {
+  background: #ff6234;
+  color: #fff;
+}
+
+@media (max-width: 1100px) {
+  .policy-topbar {
+    align-items: flex-start;
+  }
+}

@@ -1,0 +1,47 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #fff;
+    border-bottom: 1px solid #eee;
+  }
+
+  .header-welcome h2 {
+      margin: 0;
+      font-size: 20px;
+  }
+
+  .header-welcome p {
+    margin: 0;
+    color: #888;
+}
+  
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .notification-icon {
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+  }
+
+  .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+  }
+  
+  .user-name {
+    font-weight: bold;
+    display: block;
+  }
+  
+  .user-role {
+    color: #888;
+    font-size: 14px;
+  }
+  

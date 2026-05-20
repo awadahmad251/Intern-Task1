@@ -16,6 +16,7 @@ const Users = () => {
     const [activeTab, setActiveTab] = useState('Sales Person');
     const [isModalOpen, setModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
+    const [editingUser, setEditingUser] = useState(null);
     const [users, setUsers] = useState([]);
     const [error, setError] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
@@ -26,10 +27,18 @@ const Users = () => {
     };
 
     const openModal = () => setModalOpen(true);
-    const closeModal = () => setModalOpen(false);
+    const closeModal = () => {
+      setModalOpen(false);
+      setEditingUser(null);
+    };
 
     const openDetailsPanel = (user) => setSelectedUser(user);
     const closeDetailsPanel = () => setSelectedUser(null);
+
+    const handleEditUser = (user) => {
+      setEditingUser(user);
+      setModalOpen(true);
+    };
 
     const loadUsers = async () => {
       try {
@@ -70,11 +79,25 @@ const Users = () => {
 
     const handleAddUser = async (payload) => {
       try {
-        const created = await api.post('/api/users', payload);
-        setUsers((prev) => [{ ...created, isSelected: false }, ...prev]);
+        const safePayload = { ...payload };
+        if (editingUser && !safePayload.password) {
+          delete safePayload.password;
+        }
+        const request = editingUser
+          ? api.put(`/api/users/${editingUser._id || editingUser.id}`, safePayload)
+          : api.post('/api/users', safePayload);
+        const saved = await request;
+        setUsers((prev) => {
+          if (editingUser) {
+            return prev.map((user) => ((user._id || user.id) === (editingUser._id || editingUser.id)
+              ? { ...user, ...saved, isSelected: user.isSelected }
+              : user));
+          }
+          return [{ ...saved, isSelected: false }, ...prev];
+        });
         closeModal();
       } catch (err) {
-        setError(err.message || 'Failed to create user.');
+        setError(err.message || `Failed to ${editingUser ? 'update' : 'create'} user.`);
       }
     };
 
@@ -112,8 +135,8 @@ const Users = () => {
         </div>
       </div>
       {error && <div className="users-error">{error}</div>}
-      <UserTable users={visibleUsers} onRowClick={openDetailsPanel} onToggle={handleToggle} onDelete={handleDelete} canEdit={isAdmin} />
-      {isModalOpen && <AddUserModal closeModal={closeModal} userType={activeTab} onSave={handleAddUser} />}
+      <UserTable users={visibleUsers} onRowClick={openDetailsPanel} onToggle={handleToggle} onDelete={handleDelete} onEdit={handleEditUser} canEdit={isAdmin} />
+      {isModalOpen && <AddUserModal closeModal={closeModal} userType={activeTab} onSave={handleAddUser} initialData={editingUser} />}
       {selectedUser && <UserDetailsPanel user={selectedUser} onBack={closeDetailsPanel} />}
     </div>
   );

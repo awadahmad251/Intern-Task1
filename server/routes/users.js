@@ -33,7 +33,10 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
     delete safeUser.password;
     return res.status(201).json(safeUser);
   } catch (error) {
-    return res.status(500).json({ message: 'Failed to create user.' });
+    if (error.code === 11000) {
+      return res.status(409).json({ message: 'A user with this email already exists.' });
+    }
+    return res.status(500).json({ message: error.message || 'Failed to create user.' });
   }
 });
 
@@ -49,7 +52,10 @@ router.put('/:id', requireAuth, requireAdmin, async (req, res) => {
     }
     return res.json(user);
   } catch (error) {
-    return res.status(500).json({ message: 'Failed to update user.' });
+    if (error.code === 11000) {
+      return res.status(409).json({ message: 'A user with this email already exists.' });
+    }
+    return res.status(500).json({ message: error.message || 'Failed to update user.' });
   }
 });
 

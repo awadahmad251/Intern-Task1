@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './UserTable.css';
 import ToggleSwitch from './ToggleSwitch';
 import { MoreVertical, Eye } from 'react-feather';
-const UserTable = ({ users, onRowClick, onToggle, onDelete, canEdit = true }) => {
+const UserTable = ({ users, onRowClick, onToggle, onDelete, onEdit, canEdit = true }) => {
   const [openMenuId, setOpenMenuId] = useState(null);
 
   // removed per-row action menu; clicking the 3-dots now opens a small Edit/Delete menu
@@ -22,6 +22,12 @@ const UserTable = ({ users, onRowClick, onToggle, onDelete, canEdit = true }) =>
     if (window.confirm('Delete this user?')) {
       onDelete?.(userId);
     }
+    setOpenMenuId(null);
+  };
+
+  const handleEdit = (e, user) => {
+    e.stopPropagation();
+    onEdit?.(user);
     setOpenMenuId(null);
   };
 
@@ -73,6 +79,7 @@ const UserTable = ({ users, onRowClick, onToggle, onDelete, canEdit = true }) =>
                 <MoreVertical className="action-icon" onClick={(e) => toggleMenu(e, user._id || user.id)} />
                 {openMenuId === (user._id || user.id) && (
                   <div className="action-menu">
+                    <button onClick={(e) => handleEdit(e, user)}>Edit</button>
                     <button onClick={(e) => handleDelete(e, user._id || user.id)}>Delete</button>
                   </div>
                 )}

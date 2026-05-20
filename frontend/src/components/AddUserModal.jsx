@@ -2,16 +2,16 @@ import React, { useRef, useState } from 'react';
 import './AddUserModal.css';
 import { uploads } from '../api/client';
 
-const AddUserModal = ({ closeModal, userType, onSave }) => {
+const AddUserModal = ({ closeModal, userType, onSave, initialData = null }) => {
   const [formState, setFormState] = useState({
-    name: '',
-    email: '',
+    name: initialData?.name || '',
+    email: initialData?.email || '',
     password: '',
-    phone: '',
-    cnic: '',
-    city: '',
-    address: '',
-    avatarUrl: '',
+    phone: initialData?.phone || '',
+    cnic: initialData?.cnic || '',
+    city: initialData?.city?._id || initialData?.city || '',
+    address: initialData?.address || '',
+    avatarUrl: initialData?.avatarUrl || '',
   });
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
@@ -54,10 +54,12 @@ const AddUserModal = ({ closeModal, userType, onSave }) => {
     });
   };
 
+  const isEditMode = Boolean(initialData);
+
   return (
     <div className="modal-backdrop">
       <div className="modal-content">
-        <h2>Add {userType}</h2>
+        <h2>{isEditMode ? `Edit ${userType}` : `Add ${userType}`}</h2>
         <form onSubmit={handleSubmit} autoComplete="off">
           <div className="form-group">
             <label>Profile Image</label>
@@ -98,7 +100,7 @@ const AddUserModal = ({ closeModal, userType, onSave }) => {
             <input name="email" autoComplete="off" type="email" placeholder="Email" value={formState.email} onChange={handleChange('email')} required />
           </div>
           <div className="form-group">
-            <input name="password" autoComplete="new-password" type="password" placeholder="Password" value={formState.password} onChange={handleChange('password')} required />
+            <input name="password" autoComplete="new-password" type="password" placeholder={isEditMode ? 'New Password (leave blank to keep current)' : 'Password'} value={formState.password} onChange={handleChange('password')} required={!isEditMode} />
           </div>
           <div className="form-group">
             <input name="phone" autoComplete="off" type="text" placeholder="Phone No." value={formState.phone} onChange={handleChange('phone')} />
@@ -116,7 +118,7 @@ const AddUserModal = ({ closeModal, userType, onSave }) => {
           </div>
           <div className="modal-actions">
             <button type="button" onClick={closeModal}>Cancel</button>
-            <button type="submit" disabled={uploading}>Save</button>
+            <button type="submit" disabled={uploading}>{isEditMode ? 'Update' : 'Save'}</button>
           </div>
         </form>
       </div>

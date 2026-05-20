@@ -61,7 +61,6 @@ const Header = () => {
           <span className="user-name">{currentUser?.name || 'Admin'}</span>
             <span className="user-role">{currentUser?.role || 'admin'}</span>
         </div>
-        <button type="button" className="header-logout-btn" onClick={handleLogout}>Logout</button>
         {isNotificationsOpen && <NotificationsPanel onClose={toggleNotifications} />}
       </div>
     </div>

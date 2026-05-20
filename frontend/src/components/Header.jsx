@@ -17,6 +17,12 @@ const Header = () => {
   useEffect(() => {
     let mounted = true;
     const loadCurrentUser = async () => {
+      const cachedUser = getCurrentUser();
+      if (cachedUser && mounted) {
+        setCurrentUser(cachedUser);
+        return;
+      }
+
       try {
         const result = await auth.me();
         if (mounted) {
@@ -25,6 +31,15 @@ const Header = () => {
         }
       } catch (err) {
         if (mounted) {
+          // If token is invalid, clear and fall back to login.
+          if (err?.status === 401) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.dispatchEvent(new Event('auth-changed'));
+            setCurrentUser(null);
+            window.location.assign('/');
+            return;
+          }
           setCurrentUser(getCurrentUser());
         }
       }

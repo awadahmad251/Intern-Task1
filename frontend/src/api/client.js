@@ -20,9 +20,28 @@ const request = async (path, options = {}) => {
   });
 
   if (!response.ok) {
-    const errorPayload = await response.json().catch(() => ({}));
+    const rawText = await response.text().catch(() => '');
+    let errorPayload = {};
+    try {
+      errorPayload = rawText ? JSON.parse(rawText) : {};
+    } catch (e) {
+      errorPayload = { message: rawText };
+    }
     const message = errorPayload.message || 'Request failed.';
-    throw new Error(message);
+    try {
+      console.error('[api] request failed]', {
+        path,
+        status: response.status,
+        statusText: response.statusText,
+        body: errorPayload,
+      });
+    } catch (e) {
+      // ignore logging errors
+    }
+    const err = new Error(message);
+    err.status = response.status;
+    err.body = errorPayload;
+    throw err;
   }
 
   if (response.status === 204) {

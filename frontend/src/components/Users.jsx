@@ -85,6 +85,7 @@ const Users = () => {
     const handleAddUser = async (payload) => {
       try {
         setError('');
+        console.log('[users] handleAddUser payload:', payload);
         const safePayload = { ...payload };
         if (editingUser && !safePayload.password) {
           delete safePayload.password;
@@ -93,6 +94,7 @@ const Users = () => {
           ? api.put(`/api/users/${editingUser._id || editingUser.id}`, safePayload)
           : api.post('/api/users', safePayload);
         const saved = await request;
+        console.log('[users] server saved response:', saved);
         setUsers((prev) => {
           if (editingUser) {
             return prev.map((user) => ((user._id || user.id) === (editingUser._id || editingUser.id)

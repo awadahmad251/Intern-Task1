@@ -20,6 +20,7 @@ const LoginPage = () => {
       const result = await auth.login({ email, password });
       localStorage.setItem('token', result.token);
       localStorage.setItem('user', JSON.stringify(result.user));
+      window.dispatchEvent(new Event('auth-changed'));
       navigate('/dashboard');
     } catch (err) {
       setError(err.message || 'Login failed.');

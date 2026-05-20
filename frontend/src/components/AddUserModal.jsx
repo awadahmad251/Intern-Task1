@@ -48,10 +48,12 @@ const AddUserModal = ({ closeModal, userType, onSave, initialData = null, forced
       Coordinators: 'coordinator',
     };
 
-    onSave?.({
+    const out = {
       ...formState,
       role: forcedRole || roleMap[userType] || 'user',
-    });
+    };
+    console.log('[addUserModal] submit payload:', out);
+    onSave?.(out);
   };
 
   const isEditMode = Boolean(initialData);

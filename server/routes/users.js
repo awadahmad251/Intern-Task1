@@ -25,18 +25,42 @@ router.get('/', requireAuth, requireAdmin, async (req, res) => {
 router.post('/', requireAuth, requireAdmin, async (req, res) => {
   try {
     const payload = { ...req.body, city: normalizeObjectId(req.body.city) };
+    console.log('[users] create attempt by:', req.user?.email || req.user?.id || 'unknown');
+    console.log('[users] payload:', { ...payload, password: payload.password ? '***REDACTED***' : undefined });
+
+    // basic validation with clear errors
+    if (!payload.name || !payload.email || (!payload.password && !payload._id)) {
+      return res.status(400).json({ message: 'Name, email and password are required.' });
+    }
+    const allowedRoles = ['admin', 'user', 'sales', 'warehouse', 'retailer', 'coordinator'];
+    if (payload.role && !allowedRoles.includes(payload.role)) {
+      return res.status(400).json({ message: `Invalid role. Allowed roles: ${allowedRoles.join(', ')}` });
+    }
     if (payload.password) {
-      payload.password = await bcrypt.hash(payload.password, 10);
+      // Ensure password is hashed from a string to avoid bcrypt errors.
+      payload.password = await bcrypt.hash(String(payload.password), 10);
     }
     const user = await User.create(payload);
     const safeUser = user.toObject();
     delete safeUser.password;
     return res.status(201).json(safeUser);
   } catch (error) {
+    console.error('[users] create error:', error);
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ message: error.message || 'Invalid user data.' });
+    }
     if (error.code === 11000) {
       return res.status(409).json({ message: 'A user with this email already exists.' });
     }
-    return res.status(500).json({ message: error.message || 'Failed to create user.' });
+    const details = {
+      name: error?.name,
+      code: error?.code,
+      message: error?.message,
+    };
+    return res.status(500).json({
+      message: error?.message || 'Failed to create user.',
+      details,
+    });
   }
 });
 

@@ -13,6 +13,18 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+// Simple request logger to help debug frontend API calls
+app.use((req, res, next) => {
+  try {
+    const auth = req.headers.authorization || '';
+    const redacted = auth ? (auth.startsWith('Bearer ') ? `Bearer ${auth.slice(7, 15)}...` : 'present') : 'none';
+    console.log(`[req] ${req.method} ${req.path} - Authorization: ${redacted}`);
+  } catch (e) {
+    // ignore logging errors
+  }
+  return next();
+});
+
 const authRoutes = require('./routes/auth');
 const uploadRoutes = require('./routes/uploads');
 const userRoutes = require('./routes/users');

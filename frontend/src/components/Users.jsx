@@ -26,7 +26,11 @@ const Users = () => {
         setActiveTab(tab);
     };
 
-    const openModal = () => setModalOpen(true);
+    const openModal = () => {
+      setError('');
+      setEditingUser(null);
+      setModalOpen(true);
+    };
     const closeModal = () => {
       setModalOpen(false);
       setEditingUser(null);
@@ -36,6 +40,7 @@ const Users = () => {
     const closeDetailsPanel = () => setSelectedUser(null);
 
     const handleEditUser = (user) => {
+      setError('');
       setEditingUser(user);
       setModalOpen(true);
     };
@@ -79,6 +84,7 @@ const Users = () => {
 
     const handleAddUser = async (payload) => {
       try {
+        setError('');
         const safePayload = { ...payload };
         if (editingUser && !safePayload.password) {
           delete safePayload.password;
@@ -136,7 +142,7 @@ const Users = () => {
       </div>
       {error && <div className="users-error">{error}</div>}
       <UserTable users={visibleUsers} onRowClick={openDetailsPanel} onToggle={handleToggle} onDelete={handleDelete} onEdit={handleEditUser} canEdit={isAdmin} />
-      {isModalOpen && <AddUserModal closeModal={closeModal} userType={activeTab} onSave={handleAddUser} initialData={editingUser} />}
+      {isModalOpen && <AddUserModal closeModal={closeModal} userType={activeTab} onSave={handleAddUser} initialData={editingUser} forcedRole={roleByTab[activeTab]} />}
       {selectedUser && <UserDetailsPanel user={selectedUser} onBack={closeDetailsPanel} />}
     </div>
   );

@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import './Header.css';
 import notificationIcon from '../assets/notification-icon.svg';
 import NotificationsPanel from './NotificationsPanel';
 import { auth, getCurrentUser } from '../api/client';
 
 const Header = () => {
-  const navigate = useNavigate();
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState(getCurrentUser());
   const formattedDate = new Date().toLocaleDateString(undefined, {
@@ -40,12 +38,6 @@ const Header = () => {
 
   const toggleNotifications = () => {
     setIsNotificationsOpen(!isNotificationsOpen);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/');
   };
 
   return (

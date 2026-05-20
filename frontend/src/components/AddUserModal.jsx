@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import './AddUserModal.css';
 import { uploads } from '../api/client';
 
-const AddUserModal = ({ closeModal, userType, onSave, initialData = null }) => {
+const AddUserModal = ({ closeModal, userType, onSave, initialData = null, forcedRole = '' }) => {
   const [formState, setFormState] = useState({
     name: initialData?.name || '',
     email: initialData?.email || '',
@@ -50,7 +50,7 @@ const AddUserModal = ({ closeModal, userType, onSave, initialData = null }) => {
 
     onSave?.({
       ...formState,
-      role: roleMap[userType] || 'user',
+      role: forcedRole || roleMap[userType] || 'user',
     });
   };
 

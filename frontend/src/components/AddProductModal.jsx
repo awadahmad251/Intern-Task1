@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import "./AddProductModal.css";
 import { uploads } from '../api/client';
 
-export default function AddProductModal({ onClose, onSave }) {
+export default function AddProductModal({ onClose, onSave, categories = [], brands = [], cities = [] }) {
   const [nameEn, setNameEn] = useState('');
   const [nameUr, setNameUr] = useState('');
   const [category, setCategory] = useState('');
@@ -106,12 +106,18 @@ export default function AddProductModal({ onClose, onSave }) {
         <div className="ap-select-wrap">
           <select className="ap-select" value={category} onChange={(event) => setCategory(event.target.value)}>
             <option value="">Choose Category</option>
+            {categories.map((item) => (
+              <option key={item._id || item.id} value={item._id || item.id}>{item.nameEn || item.name}</option>
+            ))}
           </select>
         </div>
 
         <div className="ap-select-wrap">
           <select className="ap-select" value={brand} onChange={(event) => setBrand(event.target.value)}>
             <option value="">Choose Brand</option>
+            {brands.map((item) => (
+              <option key={item._id || item.id} value={item._id || item.id}>{item.nameEn || item.name}</option>
+            ))}
           </select>
         </div>
 
@@ -123,6 +129,9 @@ export default function AddProductModal({ onClose, onSave }) {
         <div className="ap-select-wrap">
           <select className="ap-select" value={city} onChange={(event) => setCity(event.target.value)}>
             <option value="">Choose City</option>
+            {cities.map((item) => (
+              <option key={item._id || item.id} value={item._id || item.id}>{item.name || item.nameEn}</option>
+            ))}
           </select>
         </div>
 

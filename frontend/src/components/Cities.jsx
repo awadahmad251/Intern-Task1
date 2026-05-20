@@ -8,6 +8,7 @@ import { api, isAdminUser } from '../api/client';
 const Cities = () => {
   const [showModal, setShowModal] = useState(false);
   const [cities, setCities] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState('');
   const isAdmin = isAdminUser();
 
@@ -48,6 +49,17 @@ const Cities = () => {
     }
   };
 
+  const visibleCities = cities.filter((city) => {
+    const query = searchTerm.trim().toLowerCase();
+    if (!query) {
+      return true;
+    }
+
+    return [city.name, city._id]
+      .filter(Boolean)
+      .some((value) => String(value).toLowerCase().includes(query));
+  });
+
   return (
     <div className="cities-container">
       <div className="cities-topbar">
@@ -55,7 +67,7 @@ const Cities = () => {
         <div className="cities-toolbar">
           <div className="cities-search">
             <Search size={15} className="cities-search-icon" />
-            <input type="text" placeholder="Search by order id, price..." className="cities-search-input" />
+            <input type="text" placeholder="Search by city name..." className="cities-search-input" value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} />
           </div>
           <button className="cities-filter-btn" type="button">
             Status
@@ -70,7 +82,7 @@ const Cities = () => {
       </div>
 
       {error && <div className="cities-error">{error}</div>}
-      <CityTable cities={cities} onSelect={handleSelect} onToggle={handleToggle} canEdit={isAdmin} />
+      <CityTable cities={visibleCities} onSelect={handleSelect} onToggle={handleToggle} canEdit={isAdmin} />
 
       {showModal && isAdmin && <AddCity onClose={() => setShowModal(false)} onSave={handleCreate} />}
     </div>

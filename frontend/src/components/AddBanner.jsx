@@ -5,7 +5,6 @@ import { uploads } from '../api/client';
 export default function AddBanner({ onClose, onSave }) {
   const [imageUrl, setImageUrl] = useState('');
   const [altText, setAltText] = useState('');
-  const [city, setCity] = useState('');
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
   const fileInputRef = useRef(null);
@@ -86,27 +85,9 @@ export default function AddBanner({ onClose, onSave }) {
           onChange={(event) => setImageUrl(event.target.value)}
         />
 
-        <div className="abn-select-wrap">
-          <select
-            className="abn-select"
-            value={city}
-            onChange={(event) => setCity(event.target.value)}
-          >
-            <option value="">Choose City</option>
-            <option value="lahore">Lahore</option>
-            <option value="karachi">Karachi</option>
-            <option value="islamabad">Islamabad</option>
-          </select>
-          <span className="abn-select-arrow">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-              <path d="M6 9l6 6 6-6" stroke="#555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </span>
-        </div>
-
         <div className="abn-footer">
           <button className="abn-cancel-btn" onClick={onClose} type="button">Cancel</button>
-          <button className="abn-save-btn" onClick={() => onSave?.({ altText, city, imageUrl })} type="button">Save</button>
+          <button className="abn-save-btn" onClick={() => onSave?.({ altText, imageUrl })} type="button">Save</button>
         </div>
       </div>
     </div>

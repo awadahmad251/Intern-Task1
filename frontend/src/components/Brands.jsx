@@ -9,6 +9,7 @@ import { api, isAdminUser } from '../api/client';
 const Brands = () => {
   const [showModal, setShowModal] = useState(false);
   const [brands, setBrands] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState('');
   const isAdmin = isAdminUser();
 
@@ -63,6 +64,17 @@ const Brands = () => {
     }
   };
 
+  const visibleBrands = brands.filter((brand) => {
+    const query = searchTerm.trim().toLowerCase();
+    if (!query) {
+      return true;
+    }
+
+    return [brand.nameEn, brand.nameUr, brand._id]
+      .filter(Boolean)
+      .some((value) => String(value).toLowerCase().includes(query));
+  });
+
   return (
     <div className="brands-container">
 
@@ -72,7 +84,7 @@ const Brands = () => {
         <div className="brands-toolbar">
           <div className="brands-search">
             <Search size={15} className="brands-search-icon" />
-            <input type="text" placeholder="Search by name, id..." className="brands-search-input" />
+            <input type="text" placeholder="Search by name, id..." className="brands-search-input" value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} />
           </div>
           <button className="brands-filter-btn">
             City
@@ -113,7 +125,7 @@ const Brands = () => {
             </tr>
           </thead>
           <tbody>
-            {brands.map((brand) => (
+            {visibleBrands.map((brand) => (
               <tr key={brand.rowId}>
                 <td>
                   <div

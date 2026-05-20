@@ -58,7 +58,7 @@ const AddUserModal = ({ closeModal, userType, onSave }) => {
     <div className="modal-backdrop">
       <div className="modal-content">
         <h2>Add {userType}</h2>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} autoComplete="off">
           <div className="form-group">
             <label>Profile Image</label>
             <div
@@ -92,27 +92,27 @@ const AddUserModal = ({ closeModal, userType, onSave }) => {
             )}
           </div>
           <div className="form-group">
-            <input type="text" placeholder="Name" value={formState.name} onChange={handleChange('name')} required />
+            <input name="fullName" autoComplete="off" type="text" placeholder="Name" value={formState.name} onChange={handleChange('name')} required />
           </div>
           <div className="form-group">
-            <input type="email" placeholder="Email" value={formState.email} onChange={handleChange('email')} required />
+            <input name="email" autoComplete="off" type="email" placeholder="Email" value={formState.email} onChange={handleChange('email')} required />
           </div>
           <div className="form-group">
-            <input type="password" placeholder="Password" value={formState.password} onChange={handleChange('password')} required />
+            <input name="password" autoComplete="new-password" type="password" placeholder="Password" value={formState.password} onChange={handleChange('password')} required />
           </div>
           <div className="form-group">
-            <input type="text" placeholder="Phone No." value={formState.phone} onChange={handleChange('phone')} />
+            <input name="phone" autoComplete="off" type="text" placeholder="Phone No." value={formState.phone} onChange={handleChange('phone')} />
           </div>
           <div className="form-group">
-            <input type="text" placeholder="CNIC" value={formState.cnic} onChange={handleChange('cnic')} />
+            <input name="cnic" autoComplete="off" type="text" placeholder="CNIC" value={formState.cnic} onChange={handleChange('cnic')} />
           </div>
           <div className="form-group">
-            <select>
+            <select name="city" autoComplete="off">
               <option>Choose City</option>
             </select>
           </div>
           <div className="form-group">
-            <textarea placeholder="Address" value={formState.address} onChange={handleChange('address')}></textarea>
+            <textarea name="address" autoComplete="off" placeholder="Address" value={formState.address} onChange={handleChange('address')}></textarea>
           </div>
           <div className="modal-actions">
             <button type="button" onClick={closeModal}>Cancel</button>

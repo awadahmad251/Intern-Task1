@@ -5,12 +5,20 @@ import AddUserModal from './AddUserModal';
 import UserDetailsPanel from './UserDetailsPanel';
 import { api, isAdminUser } from '../api/client';
 
+const roleByTab = {
+  'Sales Person': 'sales',
+  'Warehouse Managers': 'warehouse',
+  Retailers: 'retailer',
+  Coordinators: 'coordinator',
+};
+
 const Users = () => {
     const [activeTab, setActiveTab] = useState('Sales Person');
     const [isModalOpen, setModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     const [users, setUsers] = useState([]);
     const [error, setError] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
     const isAdmin = isAdminUser();
 
     const handleTabClick = (tab) => {
@@ -70,6 +78,16 @@ const Users = () => {
       }
     };
 
+  const visibleUsers = users.filter((user) => {
+    const activeRole = roleByTab[activeTab];
+    const matchesRole = activeRole ? user.role === activeRole : true;
+    const query = searchTerm.trim().toLowerCase();
+    const matchesSearch = !query || [user.name, user.email, user.phone, user.cnic, user.role]
+      .filter(Boolean)
+      .some((value) => String(value).toLowerCase().includes(query));
+    return matchesRole && matchesSearch;
+  });
+
   return (
     <div className="users-container">
       <div className="tabs">
@@ -81,7 +99,7 @@ const Users = () => {
       <div className="page-header">
         <h1>{activeTab}</h1>
         <div className="toolbar">
-            <input type="text" placeholder="Search by name, role..." />
+          <input type="text" placeholder="Search by name, role..." value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} />
             <select>
                 <option>City</option>
             </select>
@@ -94,7 +112,7 @@ const Users = () => {
         </div>
       </div>
       {error && <div className="users-error">{error}</div>}
-      <UserTable users={users} onRowClick={openDetailsPanel} onToggle={handleToggle} onDelete={handleDelete} canEdit={isAdmin} />
+      <UserTable users={visibleUsers} onRowClick={openDetailsPanel} onToggle={handleToggle} onDelete={handleDelete} canEdit={isAdmin} />
       {isModalOpen && <AddUserModal closeModal={closeModal} userType={activeTab} onSave={handleAddUser} />}
       {selectedUser && <UserDetailsPanel user={selectedUser} onBack={closeDetailsPanel} />}
     </div>

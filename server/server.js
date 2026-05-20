@@ -40,7 +40,14 @@ connection.once('open', () => {
       const existingAdmin = await User.findOne({ email: adminEmail });
       if (!existingAdmin) {
         const hashed = await bcrypt.hash(adminPassword, 10);
-        await User.create({ name: 'Administrator', email: adminEmail, password: hashed, role: 'admin', adminVerified: true });
+        await User.create({
+          name: 'Administrator',
+          email: adminEmail,
+          password: hashed,
+          role: 'admin',
+          adminVerified: true,
+          avatarUrl: 'https://i.pravatar.cc/150?img=12',
+        });
         console.log(`Seeded admin user: ${adminEmail}`);
       }
     } catch (err) {

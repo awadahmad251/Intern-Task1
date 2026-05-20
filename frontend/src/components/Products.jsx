@@ -8,6 +8,10 @@ import { api, isAdminUser } from '../api/client';
 const Products = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [brands, setBrands] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState('');
   const isAdmin = isAdminUser();
 
@@ -27,7 +31,28 @@ const Products = () => {
 
   useEffect(() => {
     loadProducts();
+    api.get('/api/categories').then(setCategories).catch(() => {});
+    api.get('/api/brands').then(setBrands).catch(() => {});
+    api.get('/api/cities').then(setCities).catch(() => {});
   }, []);
+
+  const visibleProducts = products.filter((product) => {
+    const query = searchTerm.trim().toLowerCase();
+    if (!query) {
+      return true;
+    }
+
+    const values = [
+      product.nameEn,
+      product.nameUr,
+      product.code,
+      product.brand?.nameEn,
+      product.category?.nameEn,
+      product.city?.name,
+    ].filter(Boolean);
+
+    return values.some((value) => String(value).toLowerCase().includes(query));
+  });
 
   const handleCreateProduct = async (payload) => {
     try {
@@ -46,7 +71,7 @@ const Products = () => {
         <div className="toolbar">
           <div className="search-input">
             <Search size={16} className="search-icon" />
-            <input type="text" placeholder="Search by name, id..." />
+            <input type="text" placeholder="Search by name, id..." value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} />
           </div>
           <select className="toolbar-select">
             <option>City</option>
@@ -69,8 +94,8 @@ const Products = () => {
         </div>
       </div>
       {error && <div className="products-error">{error}</div>}
-      <ProductTable products={products} setProducts={setProducts} setError={setError} canEdit={isAdmin} />
-      {isModalOpen && isAdmin && <AddProductModal onClose={toggleModal} onSave={handleCreateProduct} />}
+      <ProductTable products={visibleProducts} setProducts={setProducts} setError={setError} canEdit={isAdmin} />
+      {isModalOpen && isAdmin && <AddProductModal onClose={toggleModal} onSave={handleCreateProduct} categories={categories} brands={brands} cities={cities} />}
     </div>
   );
 };

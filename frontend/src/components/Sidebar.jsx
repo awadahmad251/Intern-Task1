@@ -15,6 +15,11 @@ import termsIcon from '../assets/terms-icon.svg';
 import logoutIcon from '../assets/logout-icon.svg';
 
 const Sidebar = () => {
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+  };
+
   return (
     <div className="sidebar">
       <div className="logo">Karyana</div>
@@ -100,7 +105,7 @@ const Sidebar = () => {
       </nav>
 
       <div className="logout">
-        <Link to="/login">
+        <Link to="/" onClick={handleLogout}>
           <img src={logoutIcon} alt="Logout" className="sidebar-icon" />
           Logout
         </Link>

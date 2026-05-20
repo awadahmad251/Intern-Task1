@@ -14,6 +14,7 @@ const statusLabels = {
 const Orders = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [orders, setOrders] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState('');
 
   const loadOrders = async () => {
@@ -38,6 +39,17 @@ const Orders = () => {
     setSelectedOrder(null);
   };
 
+  const visibleOrders = orders.filter((order) => {
+    const query = searchTerm.trim().toLowerCase();
+    if (!query) {
+      return true;
+    }
+
+    return [order.orderId, order._id, order.totalAmount, order.retailer?.name]
+      .filter(Boolean)
+      .some((value) => String(value).toLowerCase().includes(query));
+  });
+
   return (
     <div className="orders-container">
       <div className="orders-topbar">
@@ -45,7 +57,7 @@ const Orders = () => {
         <div className="orders-toolbar">
           <div className="orders-search">
             <Search size={15} className="orders-search-icon" />
-            <input type="text" placeholder="Search by order id, price..." className="orders-search-input" />
+            <input type="text" placeholder="Search by order id, price..." className="orders-search-input" value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} />
           </div>
           <button className="orders-filter-btn" type="button">
             City
@@ -76,7 +88,7 @@ const Orders = () => {
             </tr>
           </thead>
           <tbody>
-            {orders.map((order) => (
+            {visibleOrders.map((order) => (
               <tr key={order._id} onClick={() => handleRowClick(order)}>
                 <td>
                   <div className="orders-id-cell">

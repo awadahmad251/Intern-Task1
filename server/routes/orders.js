@@ -2,11 +2,18 @@ const express = require('express');
 const mongoose = require('mongoose');
 const Order = require('../models/Order');
 const { requireAuth, requireAdmin } = require('../middleware/auth');
-const sgMail = require('@sendgrid/mail');
+let sgMail = null;
+try {
+  // optional dependency — proceed if available
+  // eslint-disable-next-line global-require
+  sgMail = require('@sendgrid/mail');
+} catch (err) {
+  sgMail = null;
+}
 
 const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
 const FROM_EMAIL = process.env.FROM_EMAIL || 'awadk251@gmail.com';
-if (SENDGRID_API_KEY) {
+if (SENDGRID_API_KEY && sgMail && typeof sgMail.setApiKey === 'function') {
   sgMail.setApiKey(SENDGRID_API_KEY);
 }
 
@@ -69,7 +76,7 @@ router.post('/', requireAuth, async (req, res) => {
 
     // attempt to send OTP email via SendGrid when configured
     let emailSent = false;
-    if (SENDGRID_API_KEY) {
+    if (SENDGRID_API_KEY && sgMail) {
       try {
         const msg = {
           to: contactEmail,

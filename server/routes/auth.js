@@ -5,6 +5,18 @@ const User = require('../models/User');
 
 const router = express.Router();
 
+const serializeUser = (user) => ({
+  id: user._id,
+  name: user.name,
+  email: user.email,
+  role: user.role,
+  avatarUrl: user.avatarUrl || '',
+  phone: user.phone || '',
+  cnic: user.cnic || '',
+  address: user.address || '',
+  city: user.city || null,
+});
+
 const signToken = (user) => {
   return jwt.sign(
     { id: user._id, role: user.role, email: user.email },
@@ -43,12 +55,7 @@ router.post('/signup', async (req, res) => {
     const token = signToken(user);
     return res.status(201).json({
       token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
+      user: serializeUser(user),
     });
   } catch (error) {
     return res.status(500).json({ message: 'Signup failed.' });
@@ -76,15 +83,30 @@ router.post('/login', async (req, res) => {
     const token = signToken(user);
     return res.json({
       token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
+      user: serializeUser(user),
     });
   } catch (error) {
     return res.status(500).json({ message: 'Login failed.' });
+  }
+});
+
+router.get('/me', async (req, res) => {
+  try {
+    const header = req.headers.authorization || '';
+    const token = header.startsWith('Bearer ') ? header.slice(7) : null;
+    if (!token) {
+      return res.status(401).json({ message: 'Missing authorization token.' });
+    }
+
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(payload.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    return res.json({ user: serializeUser(user) });
+  } catch (error) {
+    return res.status(401).json({ message: 'Invalid or expired token.' });
   }
 });
 

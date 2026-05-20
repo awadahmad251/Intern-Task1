@@ -12,6 +12,7 @@ const Banner = () => {
   const [showPreview, setShowPreview] = useState(false);
   const [banners, setBanners] = useState([]);
   const [selectedBanner, setSelectedBanner] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState('');
   const isAdmin = isAdminUser();
 
@@ -57,6 +58,17 @@ const Banner = () => {
     }
   };
 
+  const visibleBanners = banners.filter((banner) => {
+    const query = searchTerm.trim().toLowerCase();
+    if (!query) {
+      return true;
+    }
+
+    return [banner.altText, banner._id, banner.imageUrl]
+      .filter(Boolean)
+      .some((value) => String(value).toLowerCase().includes(query));
+  });
+
   return (
     <div className="banner-container">
       <div className="banner-topbar">
@@ -64,12 +76,8 @@ const Banner = () => {
         <div className="banner-toolbar">
           <div className="banner-search">
             <Search size={15} className="banner-search-icon" />
-            <input type="text" placeholder="Search by Alternate Text" className="banner-search-input" />
+            <input type="text" placeholder="Search by Alternate Text" className="banner-search-input" value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} />
           </div>
-          <button className="banner-filter-btn" type="button">
-            City
-            <span className="banner-caret" />
-          </button>
           <button className="banner-filter-btn" type="button">
             Status
             <span className="banner-caret" />
@@ -95,7 +103,7 @@ const Banner = () => {
             </tr>
           </thead>
           <tbody>
-            {banners.map((banner) => (
+            {visibleBanners.map((banner) => (
               <tr key={banner._id} onClick={() => handlePreviewOpen(banner)} className="banner-row">
                 <td>
                   <div className="banner-image-cell">

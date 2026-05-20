@@ -52,6 +52,7 @@ export const uploads = {
 export const auth = {
   login: (payload) => api.post('/api/auth/login', payload),
   signup: (payload) => api.post('/api/auth/signup', payload),
+  me: () => api.get('/api/auth/me'),
 };
 
 export const getCurrentUser = () => {

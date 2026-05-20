@@ -8,6 +8,7 @@ import { api, isAdminUser } from '../api/client';
 const Categories = () => {
   const [showModal, setShowModal] = useState(false); // ← add this
   const [categories, setCategories] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState('');
   const isAdmin = isAdminUser();
 
@@ -53,6 +54,17 @@ const Categories = () => {
     }
   };
 
+  const visibleCategories = categories.filter((category) => {
+    const query = searchTerm.trim().toLowerCase();
+    if (!query) {
+      return true;
+    }
+
+    return [category.nameEn, category.nameUr, category._id]
+      .filter(Boolean)
+      .some((value) => String(value).toLowerCase().includes(query));
+  });
+
   return (
     <div className="categories-container">
       <div className="page-header">
@@ -60,7 +72,7 @@ const Categories = () => {
         <div className="toolbar">
           <div className="search-input">
             <Search size={16} className="search-icon" />
-            <input type="text" placeholder="Search by name, id..." />
+            <input type="text" placeholder="Search by name, id..." value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} />
           </div>
           <select className="toolbar-select">
             <option>City</option>
@@ -77,7 +89,7 @@ const Categories = () => {
         </div>
       </div>
       {error && <div className="categories-error">{error}</div>}
-      <CategoryTable categories={categories} onSelect={handleSelect} onToggle={handleToggle} canEdit={isAdmin} />
+      <CategoryTable categories={visibleCategories} onSelect={handleSelect} onToggle={handleToggle} canEdit={isAdmin} />
 
       {/* ← modal renders only when showModal is true */}
       {showModal && isAdmin && (

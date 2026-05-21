@@ -71,3 +71,30 @@
   background: #f0f0f0;
   margin: 14px 0;
 }
+
+@media (max-width: 900px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    box-shadow: none;
+    border-bottom: 1px solid #ececec;
+  }
+
+  .sidebar nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .sidebar nav li {
+    margin-bottom: 0;
+  }
+
+  .sidebar nav a {
+    padding: 8px 10px;
+  }
+
+  .logout {
+    margin-top: 16px;
+  }
+}

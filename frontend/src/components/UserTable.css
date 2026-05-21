@@ -1,5 +1,6 @@
 .user-table {
   width: 100%;
+  min-width: 920px;
   border-collapse: separate;
   border-spacing: 0 10px;
 }
@@ -79,6 +80,16 @@
   padding: 0 15px;
 }
 
+.icon-button {
+  border: none;
+  background: transparent;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
 .action-icon {
   cursor: pointer;
   display: inline-flex;
@@ -132,5 +143,11 @@
 
 .status.active {
   background-color: #28a745;
+}
+
+@media (max-width: 900px) {
+  .user-table {
+    min-width: 860px;
+  }
 }
   

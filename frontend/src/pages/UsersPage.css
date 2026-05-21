@@ -1,11 +1,19 @@
 .users-page {
     display: flex;
     background-color: #f7f7f7;
+  min-height: 100vh;
   }
   
   .main-content {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
+      min-width: 0;
+  }
+
+  @media (max-width: 900px) {
+    .users-page {
+      flex-direction: column;
+    }
   }
   

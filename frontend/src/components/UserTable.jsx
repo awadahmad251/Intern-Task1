@@ -73,10 +73,14 @@ const UserTable = ({ users, onRowClick, onToggle, onDelete, onEdit, canEdit = tr
           <td><ToggleSwitch checked={user.active} onChange={(e) => { e.stopPropagation(); onToggle?.(user._id || user.id, 'active', user); }} disabled={!canEdit} /></td>
           <td><ToggleSwitch checked={user.adminVerified} onChange={(e) => { e.stopPropagation(); onToggle?.(user._id || user.id, 'adminVerified', user); }} disabled={!canEdit} /></td>
           <td className="action-cell">
-            <Eye className="action-icon" onClick={(e) => { e.stopPropagation(); handleRowClick(user); }} />
+            <button type="button" className="icon-button" onClick={(e) => { e.stopPropagation(); handleRowClick(user); }} aria-label={`View ${user.name}`}>
+              <Eye className="action-icon" />
+            </button>
             {canEdit && (
               <>
-                <MoreVertical className="action-icon" onClick={(e) => toggleMenu(e, user._id || user.id)} />
+                <button type="button" className="icon-button" onClick={(e) => toggleMenu(e, user._id || user.id)} aria-label={`Actions for ${user.name}`}>
+                  <MoreVertical className="action-icon" />
+                </button>
                 {openMenuId === (user._id || user.id) && (
                   <div className="action-menu">
                     <button onClick={(e) => handleEdit(e, user)}>Edit</button>

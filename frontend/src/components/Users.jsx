@@ -143,7 +143,9 @@ const Users = () => {
         </div>
       </div>
       {error && <div className="users-error">{error}</div>}
-      <UserTable users={visibleUsers} onRowClick={openDetailsPanel} onToggle={handleToggle} onDelete={handleDelete} onEdit={handleEditUser} canEdit={isAdmin} />
+      <div className="users-table-wrap">
+        <UserTable users={visibleUsers} onRowClick={openDetailsPanel} onToggle={handleToggle} onDelete={handleDelete} onEdit={handleEditUser} canEdit={isAdmin} />
+      </div>
       {isModalOpen && <AddUserModal closeModal={closeModal} userType={activeTab} onSave={handleAddUser} initialData={editingUser} forcedRole={roleByTab[activeTab]} />}
       {selectedUser && <UserDetailsPanel user={selectedUser} onBack={closeDetailsPanel} />}
     </div>

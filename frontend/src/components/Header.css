@@ -5,6 +5,7 @@
     padding: 20px;
     background-color: #fff;
     border-bottom: 1px solid #eee;
+  gap: 16px;
   }
 
   .header-welcome h2 {
@@ -23,6 +24,18 @@
     gap: 15px;
   }
 
+  .profile-button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    color: inherit;
+  }
+
   .notification-icon {
       width: 24px;
       height: 24px;
@@ -33,6 +46,7 @@
       width: 40px;
       height: 40px;
       border-radius: 50%;
+      object-fit: cover;
   }
   
   .user-name {
@@ -43,5 +57,22 @@
   .user-role {
     color: #888;
     font-size: 14px;
+  }
+
+  @media (max-width: 768px) {
+    .header {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 16px;
+    }
+
+    .user-info {
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .profile-button {
+      flex: 1;
+    }
   }
   

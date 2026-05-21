@@ -67,4 +67,10 @@
     background-color: #ff4500;
     color: white;
   }
+
+  .upload-error {
+    margin: 10px 0 0;
+    color: #a1402c;
+    font-size: 13px;
+  }
   

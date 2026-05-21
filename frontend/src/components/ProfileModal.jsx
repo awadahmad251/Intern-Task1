@@ -13,7 +13,9 @@ const ProfileModal = ({ user, onClose, onSave, saving = false }) => {
   const fileInputRef = useRef(null);
 
   const handleChange = (field) => (event) => {
-    setFormState((prev) => ({ ...prev, [field]: event.target.value }));
+    const rawValue = event.target.value;
+    const nextValue = field === 'phone' ? rawValue.replace(/\D/g, '').slice(0, 11) : rawValue;
+    setFormState((prev) => ({ ...prev, [field]: nextValue }));
   };
 
   const handleFileChange = async (event) => {
@@ -36,6 +38,10 @@ const ProfileModal = ({ user, onClose, onSave, saving = false }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    if (formState.phone && !/^\d{11}$/.test(formState.phone)) {
+      setUploadError('Phone number must be exactly 11 digits.');
+      return;
+    }
     onSave?.(formState);
   };
 
@@ -69,7 +75,7 @@ const ProfileModal = ({ user, onClose, onSave, saving = false }) => {
           </label>
           <label className="profile-field">
             <span>Phone</span>
-            <input type="text" value={formState.phone} onChange={handleChange('phone')} placeholder="Optional" />
+            <input type="text" inputMode="numeric" maxLength="11" value={formState.phone} onChange={handleChange('phone')} placeholder="Optional" />
           </label>
           <div className="profile-actions">
             <button type="button" onClick={onClose}>

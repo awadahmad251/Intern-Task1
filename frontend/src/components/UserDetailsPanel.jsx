@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './UserDetailsPanel.css';
+import { formatPakCnic } from '../utils/formatters';
 
 const UserDetailsPanel = ({ onBack, user }) => {
   const [activeTab, setActiveTab] = useState('stats');
@@ -19,7 +20,7 @@ const UserDetailsPanel = ({ onBack, user }) => {
     { label: 'Full Name', value: user.name },
     { label: 'Email', value: user.email },
     { label: 'Phone', value: user.phone },
-    { label: 'CNIC', value: user.cnic },
+    { label: 'CNIC', value: formatPakCnic(user.cnic) },
     { label: 'Role', value: user.role || 'User' },
   ];
 

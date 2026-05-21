@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Search, MoreVertical } from 'react-feather';
 import './Orders.css';
+import './AdminToolbar.css';
 import OrderSidebar from './OrderSidebar';
 import { api } from '../api/client';
 
@@ -14,7 +15,11 @@ const statusLabels = {
 const Orders = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [orders, setOrders] = useState([]);
+  const [cities, setCities] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCity, setSelectedCity] = useState('all');
+  const [selectedStatus, setSelectedStatus] = useState('all');
+  const [selectedDate, setSelectedDate] = useState('all');
   const [error, setError] = useState('');
 
   const loadOrders = async () => {
@@ -29,6 +34,7 @@ const Orders = () => {
 
   useEffect(() => {
     loadOrders();
+    api.get('/api/cities').then(setCities).catch(() => {});
   }, []);
 
   const handleRowClick = (order) => {
@@ -41,14 +47,21 @@ const Orders = () => {
 
   const visibleOrders = orders.filter((order) => {
     const query = searchTerm.trim().toLowerCase();
-    if (!query) {
-      return true;
-    }
-
-    return [order.orderId, order._id, order.totalAmount, order.retailer?.name]
+    const matchesSearch = !query || [order.orderId, order._id, order.totalAmount, order.retailer?.name]
       .filter(Boolean)
       .some((value) => String(value).toLowerCase().includes(query));
+
+    const orderCityId = order.city?._id || order.city || '';
+    const matchesCity = selectedCity === 'all' || orderCityId === selectedCity;
+    const matchesStatus = selectedStatus === 'all' || order.status === selectedStatus;
+
+    const orderDateKey = new Date(order.createdAt || Date.now()).toISOString().slice(0, 10);
+    const matchesDate = selectedDate === 'all' || orderDateKey === selectedDate;
+
+    return matchesSearch && matchesCity && matchesStatus && matchesDate;
   });
+
+  const orderDateOptions = Array.from(new Set(orders.map((order) => new Date(order.createdAt || Date.now()).toISOString().slice(0, 10)))).sort().reverse();
 
   return (
     <div className="orders-container">
@@ -59,18 +72,39 @@ const Orders = () => {
             <Search size={15} className="orders-search-icon" />
             <input type="text" placeholder="Search by order id, price..." className="orders-search-input" value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} />
           </div>
-          <button className="orders-filter-btn" type="button">
-            City
-            <span className="orders-caret" />
-          </button>
-          <button className="orders-filter-btn" type="button">
-            Status
-            <span className="orders-caret" />
-          </button>
-          <button className="orders-filter-btn" type="button">
-            Date & Time
-            <span className="orders-caret" />
-          </button>
+          <select className="orders-filter-select" value={selectedCity} onChange={(event) => setSelectedCity(event.target.value)}>
+            <option value="all">City</option>
+            {cities.map((city) => (
+              <option key={city._id || city.id} value={city._id || city.id}>{city.name}</option>
+            ))}
+          </select>
+          <select className="orders-filter-select" value={selectedStatus} onChange={(event) => setSelectedStatus(event.target.value)}>
+            <option value="all">Status</option>
+            <option value="processed">Processed</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+            <option value="delivered">Delivered</option>
+          </select>
+          <select className="orders-filter-select" value={selectedDate} onChange={(event) => setSelectedDate(event.target.value)}>
+            <option value="all">Date & Time</option>
+            {orderDateOptions.map((date) => (
+              <option key={date} value={date}>{new Date(date).toLocaleDateString()}</option>
+            ))}
+          </select>
+          {(searchTerm || selectedCity !== 'all' || selectedStatus !== 'all' || selectedDate !== 'all') && (
+            <button
+              type="button"
+              className="orders-clear-btn"
+              onClick={() => {
+                setSearchTerm('');
+                setSelectedCity('all');
+                setSelectedStatus('all');
+                setSelectedDate('all');
+              }}
+            >
+              Clear Filters
+            </button>
+          )}
         </div>
       </div>
 

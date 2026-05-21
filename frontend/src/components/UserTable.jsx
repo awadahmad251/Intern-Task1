@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './UserTable.css';
 import ToggleSwitch from './ToggleSwitch';
 import { MoreVertical, Eye } from 'react-feather';
+import { formatPakCnic } from '../utils/formatters';
 const UserTable = ({ users, onRowClick, onToggle, onDelete, onEdit, canEdit = true }) => {
   const [openMenuId, setOpenMenuId] = useState(null);
 
@@ -68,7 +69,7 @@ const UserTable = ({ users, onRowClick, onToggle, onDelete, onEdit, canEdit = tr
           </td>
           <td onClick={() => handleRowClick(user)}>******</td>
           <td onClick={() => handleRowClick(user)}>{user.phone}</td>
-          <td onClick={() => handleRowClick(user)}>{user.cnic}</td>
+          <td onClick={() => handleRowClick(user)}>{formatPakCnic(user.cnic)}</td>
           <td onClick={() => handleRowClick(user)}>{user.earnings}</td>
           <td><ToggleSwitch checked={user.active} onChange={(e) => { e.stopPropagation(); onToggle?.(user._id || user.id, 'active', user); }} disabled={!canEdit} /></td>
           <td><ToggleSwitch checked={user.adminVerified} onChange={(e) => { e.stopPropagation(); onToggle?.(user._id || user.id, 'adminVerified', user); }} disabled={!canEdit} /></td>

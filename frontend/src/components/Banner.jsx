@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Search, MoreVertical } from 'react-feather';
 import './Banner.css';
+import './AdminToolbar.css';
 import ToggleSwitch from './ToggleSwitch';
 import AddBanner from './AddBanner';
 import BannerPreview from './BannerPreview';
@@ -11,8 +12,11 @@ const Banner = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [banners, setBanners] = useState([]);
+  const [cities, setCities] = useState([]);
   const [selectedBanner, setSelectedBanner] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCity, setSelectedCity] = useState('all');
+  const [selectedStatus, setSelectedStatus] = useState('all');
   const [error, setError] = useState('');
   const isAdmin = isAdminUser();
 
@@ -28,6 +32,7 @@ const Banner = () => {
 
   useEffect(() => {
     loadBanners();
+    api.get('/api/cities').then(setCities).catch(() => {});
   }, []);
 
   const handleSaveBanner = async (payload) => {
@@ -60,13 +65,19 @@ const Banner = () => {
 
   const visibleBanners = banners.filter((banner) => {
     const query = searchTerm.trim().toLowerCase();
-    if (!query) {
-      return true;
-    }
-
-    return [banner.altText, banner._id, banner.imageUrl]
+    const matchesSearch = !query || [banner.altText, banner._id, banner.imageUrl]
       .filter(Boolean)
       .some((value) => String(value).toLowerCase().includes(query));
+
+    const bannerCityId = banner.city?._id || banner.city || '';
+    const matchesCity = selectedCity === 'all' || bannerCityId === selectedCity;
+    const matchesStatus = selectedStatus === 'all'
+      || (selectedStatus === 'active' && banner.active)
+      || (selectedStatus === 'inactive' && !banner.active)
+      || (selectedStatus === 'verified' && banner.adminVerified)
+      || (selectedStatus === 'unverified' && !banner.adminVerified);
+
+    return matchesSearch && matchesCity && matchesStatus;
   });
 
   return (
@@ -78,10 +89,32 @@ const Banner = () => {
             <Search size={15} className="banner-search-icon" />
             <input type="text" placeholder="Search by Alternate Text" className="banner-search-input" value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} />
           </div>
-          <button className="banner-filter-btn" type="button">
-            Status
-            <span className="banner-caret" />
-          </button>
+          <select className="banner-filter-select" value={selectedCity} onChange={(event) => setSelectedCity(event.target.value)}>
+            <option value="all">City</option>
+            {cities.map((city) => (
+              <option key={city._id || city.id} value={city._id || city.id}>{city.name}</option>
+            ))}
+          </select>
+          <select className="banner-filter-select" value={selectedStatus} onChange={(event) => setSelectedStatus(event.target.value)}>
+            <option value="all">Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="verified">Verified</option>
+            <option value="unverified">Unverified</option>
+          </select>
+          {(searchTerm || selectedCity !== 'all' || selectedStatus !== 'all') && (
+            <button
+              type="button"
+              className="banner-clear-btn"
+              onClick={() => {
+                setSearchTerm('');
+                setSelectedCity('all');
+                setSelectedStatus('all');
+              }}
+            >
+              Clear Filters
+            </button>
+          )}
           {isAdmin && (
             <button className="banner-add-btn" type="button" onClick={() => setShowAddModal(true)}>
               + Add New

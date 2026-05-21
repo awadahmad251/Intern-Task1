@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Search, MoreVertical, Check } from 'react-feather';
 import './Brands.css';
+import './AdminToolbar.css';
 import AddBrand from './AddBrand';
 import ToggleSwitch from './ToggleSwitch';
 import neonLogo from '../assets/images/neonlogo.png';
@@ -9,7 +10,10 @@ import { api, isAdminUser } from '../api/client';
 const Brands = () => {
   const [showModal, setShowModal] = useState(false);
   const [brands, setBrands] = useState([]);
+  const [cities, setCities] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCity, setSelectedCity] = useState('all');
+  const [selectedStatus, setSelectedStatus] = useState('all');
   const [error, setError] = useState('');
   const isAdmin = isAdminUser();
 
@@ -25,6 +29,7 @@ const Brands = () => {
 
   useEffect(() => {
     loadBrands();
+    api.get('/api/cities').then(setCities).catch(() => {});
   }, []);
 
   const handleSelectBrand = (brandId) => {
@@ -66,13 +71,19 @@ const Brands = () => {
 
   const visibleBrands = brands.filter((brand) => {
     const query = searchTerm.trim().toLowerCase();
-    if (!query) {
-      return true;
-    }
-
-    return [brand.nameEn, brand.nameUr, brand._id]
+    const matchesSearch = !query || [brand.nameEn, brand.nameUr, brand._id]
       .filter(Boolean)
       .some((value) => String(value).toLowerCase().includes(query));
+
+    const brandCityId = brand.city?._id || brand.city || '';
+    const matchesCity = selectedCity === 'all' || brandCityId === selectedCity;
+    const matchesStatus = selectedStatus === 'all'
+      || (selectedStatus === 'active' && brand.active)
+      || (selectedStatus === 'inactive' && !brand.active)
+      || (selectedStatus === 'verified' && brand.adminVerified)
+      || (selectedStatus === 'unverified' && !brand.adminVerified);
+
+    return matchesSearch && matchesCity && matchesStatus;
   });
 
   return (
@@ -86,18 +97,32 @@ const Brands = () => {
             <Search size={15} className="brands-search-icon" />
             <input type="text" placeholder="Search by name, id..." className="brands-search-input" value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} />
           </div>
-          <button className="brands-filter-btn">
-            City
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
-              <path d="M6 9l6 6 6-6" stroke="#555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-          <button className="brands-filter-btn">
-            Status
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
-              <path d="M6 9l6 6 6-6" stroke="#555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
+          <select className="brands-filter-select" value={selectedCity} onChange={(event) => setSelectedCity(event.target.value)}>
+            <option value="all">City</option>
+            {cities.map((city) => (
+              <option key={city._id || city.id} value={city._id || city.id}>{city.name}</option>
+            ))}
+          </select>
+          <select className="brands-filter-select" value={selectedStatus} onChange={(event) => setSelectedStatus(event.target.value)}>
+            <option value="all">Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="verified">Verified</option>
+            <option value="unverified">Unverified</option>
+          </select>
+          {(searchTerm || selectedCity !== 'all' || selectedStatus !== 'all') && (
+            <button
+              type="button"
+              className="brands-clear-btn"
+              onClick={() => {
+                setSearchTerm('');
+                setSelectedCity('all');
+                setSelectedStatus('all');
+              }}
+            >
+              Clear Filters
+            </button>
+          )}
           {isAdmin && (
             <button className="brands-add-btn" onClick={() => setShowModal(true)}>
               + Add Brand

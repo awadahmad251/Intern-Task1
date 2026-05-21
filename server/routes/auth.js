@@ -5,6 +5,23 @@ const User = require('../models/User');
 
 const router = express.Router();
 
+const normalizeDigits = (value, maxLength) => {
+  if (value === undefined || value === null || value === '') {
+    return '';
+  }
+  return String(value).replace(/\D/g, '').slice(0, maxLength);
+};
+
+const validateContactFields = (phone, cnic) => {
+  if (phone && !/^\d{11}$/.test(phone)) {
+    return 'Contact number must be exactly 11 digits.';
+  }
+  if (cnic && !/^\d{13}$/.test(cnic)) {
+    return 'CNIC must be exactly 13 digits.';
+  }
+  return '';
+};
+
 const serializeUser = (user) => ({
   id: user._id,
   name: user.name,
@@ -38,6 +55,13 @@ router.post('/signup', async (req, res) => {
       return res.status(409).json({ message: 'Email already in use.' });
     }
 
+    const normalizedPhone = normalizeDigits(phone, 11);
+    const normalizedCnic = normalizeDigits(cnic, 13);
+    const contactError = validateContactFields(normalizedPhone, normalizedCnic);
+    if (contactError) {
+      return res.status(400).json({ message: contactError });
+    }
+
     const hashed = await bcrypt.hash(password, 10);
 
     const user = await User.create({
@@ -45,8 +69,8 @@ router.post('/signup', async (req, res) => {
       email,
       password: hashed,
       role: role || 'user',
-      phone,
-      cnic,
+      phone: normalizedPhone,
+      cnic: normalizedCnic,
       address,
       city,
       avatarUrl,

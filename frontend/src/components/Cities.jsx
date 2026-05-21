@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Search } from 'react-feather';
 import './Cities.css';
+import './AdminToolbar.css';
 import CityTable from './CityTable';
 import AddCity from './AddCity';
 import { api, isAdminUser } from '../api/client';
@@ -9,6 +10,7 @@ const Cities = () => {
   const [showModal, setShowModal] = useState(false);
   const [cities, setCities] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('all');
   const [error, setError] = useState('');
   const isAdmin = isAdminUser();
 
@@ -51,13 +53,17 @@ const Cities = () => {
 
   const visibleCities = cities.filter((city) => {
     const query = searchTerm.trim().toLowerCase();
-    if (!query) {
-      return true;
-    }
-
-    return [city.name, city._id]
+    const matchesSearch = !query || [city.name, city._id]
       .filter(Boolean)
       .some((value) => String(value).toLowerCase().includes(query));
+
+    const matchesStatus = selectedStatus === 'all'
+      || (selectedStatus === 'active' && city.active)
+      || (selectedStatus === 'inactive' && !city.active)
+      || (selectedStatus === 'verified' && city.adminVerified)
+      || (selectedStatus === 'unverified' && !city.adminVerified);
+
+    return matchesSearch && matchesStatus;
   });
 
   return (
@@ -69,10 +75,25 @@ const Cities = () => {
             <Search size={15} className="cities-search-icon" />
             <input type="text" placeholder="Search by city name..." className="cities-search-input" value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} />
           </div>
-          <button className="cities-filter-btn" type="button">
-            Status
-            <span className="cities-caret" />
-          </button>
+          <select className="cities-filter-select" value={selectedStatus} onChange={(event) => setSelectedStatus(event.target.value)}>
+            <option value="all">Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="verified">Verified</option>
+            <option value="unverified">Unverified</option>
+          </select>
+          {(searchTerm || selectedStatus !== 'all') && (
+            <button
+              className="cities-clear-btn"
+              type="button"
+              onClick={() => {
+                setSearchTerm('');
+                setSelectedStatus('all');
+              }}
+            >
+              Clear Filters
+            </button>
+          )}
           {isAdmin && (
             <button className="cities-add-btn" type="button" onClick={() => setShowModal(true)}>
               + Add City

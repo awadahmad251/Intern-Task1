@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './Users.css';
+import './AdminToolbar.css';
 import UserTable from './UserTable';
 import AddUserModal from './AddUserModal';
 import UserDetailsPanel from './UserDetailsPanel';

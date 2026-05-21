@@ -13,6 +13,23 @@ const normalizeObjectId = (value) => {
   return mongoose.Types.ObjectId.isValid(value) ? value : null;
 };
 
+const normalizeDigits = (value, maxLength) => {
+  if (value === undefined || value === null || value === '') {
+    return '';
+  }
+  return String(value).replace(/\D/g, '').slice(0, maxLength);
+};
+
+const validateContactFields = (payload) => {
+  if (payload.phone && !/^\d{11}$/.test(payload.phone)) {
+    return 'Contact number must be exactly 11 digits.';
+  }
+  if (payload.cnic && !/^\d{13}$/.test(payload.cnic)) {
+    return 'CNIC must be exactly 13 digits.';
+  }
+  return '';
+};
+
 router.get('/', requireAuth, requireAdmin, async (req, res) => {
   try {
     const users = await User.find().select('-password').populate('city', 'name');
@@ -24,7 +41,12 @@ router.get('/', requireAuth, requireAdmin, async (req, res) => {
 
 router.post('/', requireAuth, requireAdmin, async (req, res) => {
   try {
-    const payload = { ...req.body, city: normalizeObjectId(req.body.city) };
+    const payload = {
+      ...req.body,
+      phone: normalizeDigits(req.body.phone, 11),
+      cnic: normalizeDigits(req.body.cnic, 13),
+      city: normalizeObjectId(req.body.city),
+    };
     console.log('[users] create attempt by:', req.user?.email || req.user?.id || 'unknown');
     console.log('[users] payload:', { ...payload, password: payload.password ? '***REDACTED***' : undefined });
 
@@ -40,6 +62,12 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
       // Ensure password is hashed from a string to avoid bcrypt errors.
       payload.password = await bcrypt.hash(String(payload.password), 10);
     }
+
+    const contactError = validateContactFields(payload);
+    if (contactError) {
+      return res.status(400).json({ message: contactError });
+    }
+
     const user = await User.create(payload);
     const safeUser = user.toObject();
     delete safeUser.password;
@@ -66,10 +94,21 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
 
 router.put('/:id', requireAuth, requireAdmin, async (req, res) => {
   try {
-    const payload = { ...req.body, city: normalizeObjectId(req.body.city) };
+    const payload = {
+      ...req.body,
+      phone: normalizeDigits(req.body.phone, 11),
+      cnic: normalizeDigits(req.body.cnic, 13),
+      city: normalizeObjectId(req.body.city),
+    };
     if (payload.password) {
       payload.password = await bcrypt.hash(payload.password, 10);
     }
+
+    const contactError = validateContactFields(payload);
+    if (contactError) {
+      return res.status(400).json({ message: contactError });
+    }
+
     const user = await User.findByIdAndUpdate(req.params.id, payload, { new: true }).select('-password');
     if (!user) {
       return res.status(404).json({ message: 'User not found.' });

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Search } from 'react-feather';
 import './Categories.css';
+import './AdminToolbar.css';
 import CategoryTable from './CategoryTable';
 import CreateCategory from './CreateCategory';
 import { api, isAdminUser } from '../api/client';
@@ -8,7 +9,10 @@ import { api, isAdminUser } from '../api/client';
 const Categories = () => {
   const [showModal, setShowModal] = useState(false); // ← add this
   const [categories, setCategories] = useState([]);
+  const [cities, setCities] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCity, setSelectedCity] = useState('all');
+  const [selectedStatus, setSelectedStatus] = useState('all');
   const [error, setError] = useState('');
   const isAdmin = isAdminUser();
 
@@ -24,6 +28,7 @@ const Categories = () => {
 
   useEffect(() => {
     loadCategories();
+    api.get('/api/cities').then(setCities).catch(() => {});
   }, []);
 
   const handleSelect = (categoryId) => {
@@ -56,13 +61,19 @@ const Categories = () => {
 
   const visibleCategories = categories.filter((category) => {
     const query = searchTerm.trim().toLowerCase();
-    if (!query) {
-      return true;
-    }
-
-    return [category.nameEn, category.nameUr, category._id]
+    const matchesSearch = !query || [category.nameEn, category.nameUr, category._id]
       .filter(Boolean)
       .some((value) => String(value).toLowerCase().includes(query));
+
+    const categoryCityId = category.city?._id || category.city || '';
+    const matchesCity = selectedCity === 'all' || categoryCityId === selectedCity;
+    const matchesStatus = selectedStatus === 'all'
+      || (selectedStatus === 'active' && category.active)
+      || (selectedStatus === 'inactive' && !category.active)
+      || (selectedStatus === 'verified' && category.adminVerified)
+      || (selectedStatus === 'unverified' && !category.adminVerified);
+
+    return matchesSearch && matchesCity && matchesStatus;
   });
 
   return (
@@ -74,12 +85,32 @@ const Categories = () => {
             <Search size={16} className="search-icon" />
             <input type="text" placeholder="Search by name, id..." value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} />
           </div>
-          <select className="toolbar-select">
-            <option>City</option>
+          <select className="toolbar-select" value={selectedCity} onChange={(event) => setSelectedCity(event.target.value)}>
+            <option value="all">City</option>
+            {cities.map((city) => (
+              <option key={city._id || city.id} value={city._id || city.id}>{city.name}</option>
+            ))}
           </select>
-          <select className="toolbar-select">
-            <option>Status</option>
+          <select className="toolbar-select" value={selectedStatus} onChange={(event) => setSelectedStatus(event.target.value)}>
+            <option value="all">Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="verified">Verified</option>
+            <option value="unverified">Unverified</option>
           </select>
+          {(searchTerm || selectedCity !== 'all' || selectedStatus !== 'all') && (
+            <button
+              type="button"
+              className="clear-filters-btn"
+              onClick={() => {
+                setSearchTerm('');
+                setSelectedCity('all');
+                setSelectedStatus('all');
+              }}
+            >
+              Clear Filters
+            </button>
+          )}
           {isAdmin && (
             <button className="add-category-btn" onClick={() => setShowModal(true)}> {/* ← add onClick */}
               <span className="add-icon">+</span>

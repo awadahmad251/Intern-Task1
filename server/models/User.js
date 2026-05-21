@@ -5,8 +5,22 @@ const userSchema = new mongoose.Schema(
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    phone: { type: String, default: '' },
-    cnic: { type: String, default: '' },
+    phone: {
+      type: String,
+      default: '',
+      validate: {
+        validator: (value) => !value || /^\d{11}$/.test(value),
+        message: 'Contact number must be exactly 11 digits.',
+      },
+    },
+    cnic: {
+      type: String,
+      default: '',
+      validate: {
+        validator: (value) => !value || /^\d{13}$/.test(value),
+        message: 'CNIC must be exactly 13 digits.',
+      },
+    },
     address: { type: String, default: '' },
     avatarUrl: { type: String, default: '' },
     city: { type: mongoose.Schema.Types.ObjectId, ref: 'City', default: null },

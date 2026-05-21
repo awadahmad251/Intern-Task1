@@ -3,6 +3,7 @@ import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import { Search, ChevronDown } from 'react-feather';
 import './LogsPage.css';
+import '../components/AdminToolbar.css';
 import { api } from '../api/client';
 
 const LogsPage = () => {

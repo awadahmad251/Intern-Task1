@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import './AddUserModal.css';
 import { uploads } from '../api/client';
+import { digitsOnly, formatPakCnic } from '../utils/formatters';
 
 const AddUserModal = ({ closeModal, userType, onSave, initialData = null, forcedRole = '' }) => {
   const [formState, setFormState] = useState({
@@ -15,10 +16,18 @@ const AddUserModal = ({ closeModal, userType, onSave, initialData = null, forced
   });
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
+  const [formError, setFormError] = useState('');
   const fileInputRef = useRef(null);
 
   const handleChange = (field) => (event) => {
-    setFormState((prev) => ({ ...prev, [field]: event.target.value }));
+    const rawValue = event.target.value;
+    const nextValue = field === 'phone'
+      ? rawValue.replace(/\D/g, '').slice(0, 11)
+      : field === 'cnic'
+        ? digitsOnly(rawValue).slice(0, 13)
+        : rawValue;
+    setFormError('');
+    setFormState((prev) => ({ ...prev, [field]: nextValue }));
   };
 
   const handleFileChange = async (event) => {
@@ -41,6 +50,14 @@ const AddUserModal = ({ closeModal, userType, onSave, initialData = null, forced
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    if (formState.phone && !/^\d{11}$/.test(formState.phone)) {
+      setFormError('Contact number must be exactly 11 digits.');
+      return;
+    }
+    if (formState.cnic && !/^\d{13}$/.test(formState.cnic)) {
+      setFormError('CNIC must be exactly 13 digits.');
+      return;
+    }
     const roleMap = {
       'Sales Person': 'sales',
       'Warehouse Managers': 'warehouse',
@@ -105,10 +122,10 @@ const AddUserModal = ({ closeModal, userType, onSave, initialData = null, forced
             <input name="password" autoComplete="new-password" type="password" placeholder={isEditMode ? 'New Password (leave blank to keep current)' : 'Password'} value={formState.password} onChange={handleChange('password')} required={!isEditMode} />
           </div>
           <div className="form-group">
-            <input name="phone" autoComplete="off" type="text" placeholder="Phone No." value={formState.phone} onChange={handleChange('phone')} />
+            <input name="phone" autoComplete="off" type="text" inputMode="numeric" maxLength="11" placeholder="Phone No." value={formState.phone} onChange={handleChange('phone')} />
           </div>
           <div className="form-group">
-            <input name="cnic" autoComplete="off" type="text" placeholder="CNIC" value={formState.cnic} onChange={handleChange('cnic')} />
+            <input name="cnic" autoComplete="off" type="text" inputMode="numeric" maxLength="15" placeholder="12345-1234567-1" value={formatPakCnic(formState.cnic)} onChange={handleChange('cnic')} />
           </div>
           <div className="form-group">
             <select name="city" autoComplete="off">
@@ -122,6 +139,7 @@ const AddUserModal = ({ closeModal, userType, onSave, initialData = null, forced
             <button type="button" onClick={closeModal}>Cancel</button>
             <button type="submit" disabled={uploading}>{isEditMode ? 'Update' : 'Save'}</button>
           </div>
+          {formError && <p className="upload-error">{formError}</p>}
         </form>
       </div>
     </div>

@@ -73,12 +73,14 @@ app.get('/health', (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
-const uploadsDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadsDir)) {
+const uploadsDir = process.env.VERCEL ? path.join('/tmp', 'uploads') : path.join(__dirname, 'uploads');
+if (!process.env.VERCEL && !fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
-app.use('/uploads', express.static(uploadsDir));
+if (!process.env.VERCEL) {
+  app.use('/uploads', express.static(uploadsDir));
+}
 app.use('/api/users', userRoutes);
 app.use('/api/uploads', uploadRoutes);
 const statsRoutes = require('./routes/stats');
@@ -91,6 +93,10 @@ app.use('/api/banners', bannerRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/logs', logRoutes);
 
-app.listen(port, () => {
-  console.log(`Server is running on port: ${port}`);
-});
+if (require.main === module && !process.env.VERCEL) {
+  app.listen(port, () => {
+    console.log(`Server is running on port: ${port}`);
+  });
+}
+
+module.exports = app;

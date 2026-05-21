@@ -12,20 +12,70 @@ import BannerPage from './pages/BannerPage';
 import LogsPage from './pages/LogsPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsConditionsPage from './pages/TermsConditionsPage';
+import { auth, getCurrentUser } from './api/client';
 import './App.css';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(Boolean(localStorage.getItem('token')));
+  const [isAuthReady, setIsAuthReady] = useState(false);
 
   useEffect(() => {
+    let mounted = true;
+
+    const verifyAuth = async () => {
+      const token = localStorage.getItem('token');
+      const cachedUser = getCurrentUser();
+
+      if (!token) {
+        if (mounted) {
+          setIsAuthenticated(false);
+          setIsAuthReady(true);
+        }
+        return;
+      }
+
+      if (cachedUser) {
+        if (mounted) {
+          setIsAuthenticated(true);
+          setIsAuthReady(true);
+        }
+        return;
+      }
+
+      try {
+        const result = await auth.me();
+        localStorage.setItem('user', JSON.stringify(result.user));
+        if (mounted) {
+          setIsAuthenticated(true);
+        }
+      } catch (error) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        if (mounted) {
+          setIsAuthenticated(false);
+        }
+      } finally {
+        if (mounted) {
+          setIsAuthReady(true);
+        }
+      }
+    };
+
+    verifyAuth();
+
     const syncAuth = () => setIsAuthenticated(Boolean(localStorage.getItem('token')));
     window.addEventListener('storage', syncAuth);
     window.addEventListener('auth-changed', syncAuth);
     return () => {
+      mounted = false;
       window.removeEventListener('storage', syncAuth);
       window.removeEventListener('auth-changed', syncAuth);
     };
   }, []);
+
+  if (!isAuthReady) {
+    return <div className="app-loading">Loading...</div>;
+  }
 
   return (
     <Router>

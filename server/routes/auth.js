@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
 const router = express.Router();
+const JWT_SECRET = process.env.JWT_SECRET || 'karyana-jwt-secret-v1';
 
 const normalizeDigits = (value, maxLength) => {
   if (value === undefined || value === null || value === '') {
@@ -37,7 +38,7 @@ const serializeUser = (user) => ({
 const signToken = (user) => {
   return jwt.sign(
     { id: user._id, role: user.role, email: user.email },
-    process.env.JWT_SECRET,
+    JWT_SECRET,
     { expiresIn: '7d' }
   );
 };
@@ -122,7 +123,7 @@ router.get('/me', async (req, res) => {
       return res.status(401).json({ message: 'Missing authorization token.' });
     }
 
-    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    const payload = jwt.verify(token, JWT_SECRET);
     const user = await User.findById(payload.id);
     if (!user) {
       return res.status(404).json({ message: 'User not found.' });

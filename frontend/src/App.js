@@ -12,7 +12,7 @@ import BannerPage from './pages/BannerPage';
 import LogsPage from './pages/LogsPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsConditionsPage from './pages/TermsConditionsPage';
-import { auth, getCurrentUser } from './api/client';
+import { auth } from './api/client';
 import './App.css';
 
 function App() {
@@ -24,19 +24,10 @@ function App() {
 
     const verifyAuth = async () => {
       const token = localStorage.getItem('token');
-      const cachedUser = getCurrentUser();
 
       if (!token) {
         if (mounted) {
           setIsAuthenticated(false);
-          setIsAuthReady(true);
-        }
-        return;
-      }
-
-      if (cachedUser) {
-        if (mounted) {
-          setIsAuthenticated(true);
           setIsAuthReady(true);
         }
         return;

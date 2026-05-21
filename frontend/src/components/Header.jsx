@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './Header.css';
 import notificationIcon from '../assets/notification-icon.svg';
 import NotificationsPanel from './NotificationsPanel';
-import { api, auth, getCurrentUser } from '../api/client';
+import { api, getCurrentUser } from '../api/client';
 import ProfileModal from './ProfileModal';
 
 const Header = () => {
@@ -19,36 +19,11 @@ const Header = () => {
 
   useEffect(() => {
     let mounted = true;
-    const loadCurrentUser = async () => {
-      const cachedUser = getCurrentUser();
-      if (cachedUser && mounted) {
-        setCurrentUser(cachedUser);
-        return;
-      }
+    const cachedUser = getCurrentUser();
+    if (cachedUser && mounted) {
+      setCurrentUser(cachedUser);
+    }
 
-      try {
-        const result = await auth.me();
-        if (mounted) {
-          setCurrentUser(result.user);
-          localStorage.setItem('user', JSON.stringify(result.user));
-        }
-      } catch (err) {
-        if (mounted) {
-          // If token is invalid, clear and fall back to login.
-          if (err?.status === 401) {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            window.dispatchEvent(new Event('auth-changed'));
-            setCurrentUser(null);
-            window.location.assign('/');
-            return;
-          }
-          setCurrentUser(getCurrentUser());
-        }
-      }
-    };
-
-    loadCurrentUser();
     const syncUser = () => {
       if (mounted) {
         setCurrentUser(getCurrentUser());

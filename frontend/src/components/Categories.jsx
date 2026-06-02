@@ -8,8 +8,10 @@ import { api, isAdminUser } from '../api/client';
 
 const Categories = () => {
   const [showModal, setShowModal] = useState(false); // ← add this
+  const [editingCategory, setEditingCategory] = useState(null);
   const [categories, setCategories] = useState([]);
   const [cities, setCities] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCity, setSelectedCity] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
@@ -18,11 +20,14 @@ const Categories = () => {
 
   const loadCategories = async () => {
     try {
+      setLoading(true);
       const data = await api.get('/api/categories');
       setCategories(data.map((category) => ({ ...category, isSelected: false })));
       setError('');
     } catch (err) {
       setError(err.message || 'Failed to load categories.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -46,16 +51,44 @@ const Categories = () => {
 
   const handleCreate = async (payload) => {
     try {
-      const created = await api.post('/api/categories', {
+      const requestPayload = {
         nameEn: payload.nameEn,
         nameUr: payload.nameUr,
         imageUrl: payload.imageUrl,
         city: payload.city,
-      });
-      setCategories((prev) => [{ ...created, isSelected: false }, ...prev]);
+      };
+
+      if (editingCategory) {
+        const updated = await api.put(`/api/categories/${editingCategory._id || editingCategory.id}`, requestPayload);
+        setCategories((prev) => prev.map((category) => ((category._id || category.id) === (editingCategory._id || editingCategory.id)
+          ? { ...category, ...updated }
+          : category)));
+      } else {
+        const created = await api.post('/api/categories', requestPayload);
+        setCategories((prev) => [{ ...created, isSelected: false }, ...prev]);
+      }
       setShowModal(false);
+      setEditingCategory(null);
     } catch (err) {
       setError(err.message || 'Failed to create category.');
+    }
+  };
+
+  const handleEdit = (category) => {
+    setEditingCategory(category);
+    setShowModal(true);
+  };
+
+  const handleDelete = async (categoryId) => {
+    if (!window.confirm('Delete this category?')) {
+      return;
+    }
+
+    try {
+      await api.del(`/api/categories/${categoryId}`);
+      setCategories((prev) => prev.filter((category) => (category._id || category.id) !== categoryId));
+    } catch (err) {
+      setError(err.message || 'Failed to delete category.');
     }
   };
 
@@ -120,11 +153,30 @@ const Categories = () => {
         </div>
       </div>
       {error && <div className="categories-error">{error}</div>}
-      <CategoryTable categories={visibleCategories} onSelect={handleSelect} onToggle={handleToggle} canEdit={isAdmin} />
+      {loading ? (
+        <div className="page-loading">Loading...</div>
+      ) : (
+        <CategoryTable
+          categories={visibleCategories}
+          onSelect={handleSelect}
+          onToggle={handleToggle}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          canEdit={isAdmin}
+        />
+      )}
 
       {/* ← modal renders only when showModal is true */}
       {showModal && isAdmin && (
-        <CreateCategory onClose={() => setShowModal(false)} onSave={handleCreate} />
+        <CreateCategory
+          onClose={() => {
+            setShowModal(false);
+            setEditingCategory(null);
+          }}
+          onSave={handleCreate}
+          initialData={editingCategory}
+          cities={cities}
+        />
       )}
     </div>
   );

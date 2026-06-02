@@ -70,6 +70,45 @@
   background: #f2f2f2;
 }
 
+.cities-action-cell {
+  position: relative;
+  text-align: right;
+}
+
+.cities-action-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #fff;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  z-index: 10;
+  width: 140px;
+  padding: 6px 0;
+}
+
+.cities-action-menu button {
+  display: block;
+  width: 100%;
+  padding: 10px 14px;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  color: #333;
+}
+
+.cities-action-menu button:hover {
+  background-color: #f6f6f6;
+}
+
+.table-empty {
+  text-align: center;
+  color: #777;
+  padding: 20px 0;
+}
+
 .custom-checkbox {
   width: 20px;
   height: 20px;

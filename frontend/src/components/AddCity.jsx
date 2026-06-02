@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import './AddCity.css';
 
-export default function AddCity({ onClose, onSave }) {
-  const [name, setName] = useState('');
+export default function AddCity({ onClose, onSave, initialData = null }) {
+  const [name, setName] = useState(initialData?.name || '');
+  const isEditMode = Boolean(initialData);
 
   return (
     <div className="ac-overlay" onClick={onClose}>
       <div className="ac-modal" onClick={(event) => event.stopPropagation()}>
-        <h2 className="ac-title">Add City</h2>
+        <h2 className="ac-title">{isEditMode ? 'Edit City' : 'Add City'}</h2>
         <hr />
 
         <input
@@ -21,7 +22,7 @@ export default function AddCity({ onClose, onSave }) {
 
         <div className="ac-footer">
           <button className="ac-cancel-btn" onClick={onClose} type="button">Cancel</button>
-          <button className="ac-save-btn" onClick={() => onSave?.({ name })} type="button">Save</button>
+          <button className="ac-save-btn" onClick={() => onSave?.({ name })} type="button">{isEditMode ? 'Update' : 'Save'}</button>
         </div>
       </div>
     </div>

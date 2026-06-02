@@ -49,19 +49,24 @@ connection.once('open', () => {
     try {
       const adminEmail = process.env.ADMIN_EMAIL || 'admin@karyana.local';
       const adminPassword = process.env.ADMIN_PASSWORD || 'Karyana@123';
-      const existingAdmin = await User.findOne({ email: adminEmail });
-      if (!existingAdmin) {
-        const hashed = await bcrypt.hash(adminPassword, 10);
-        await User.create({
-          name: 'Administrator',
-          email: adminEmail,
-          password: hashed,
-          role: 'admin',
-          adminVerified: true,
-          avatarUrl: 'https://i.pravatar.cc/150?img=12',
-        });
-        console.log(`Seeded admin user: ${adminEmail}`);
-      }
+      const hashed = await bcrypt.hash(adminPassword, 10);
+      const result = await User.findOneAndUpdate(
+        { email: adminEmail },
+        {
+          $set: {
+            name: 'Administrator',
+            password: hashed,
+            role: 'admin',
+            adminVerified: true,
+            avatarUrl: 'https://i.pravatar.cc/150?img=12',
+          },
+          $setOnInsert: {
+            email: adminEmail,
+          },
+        },
+        { upsert: true, new: true }
+      );
+      console.log(`Seeded admin user: ${result.email}`);
     } catch (err) {
       console.error('Failed to seed admin user', err);
     }

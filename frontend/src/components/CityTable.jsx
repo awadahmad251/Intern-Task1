@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './CityTable.css';
 import ToggleSwitch from './ToggleSwitch';
 import { MoreVertical, Check } from 'react-feather';
@@ -9,7 +9,25 @@ const CustomCheckbox = ({ checked, onChange }) => (
   </div>
 );
 
-const CityTable = ({ cities, onSelect, onToggle, canEdit = true }) => {
+const CityTable = ({ cities, onSelect, onToggle, onEdit, onDelete, canEdit = true }) => {
+  const [openMenuId, setOpenMenuId] = useState(null);
+
+  const toggleMenu = (event, cityId) => {
+    event.stopPropagation();
+    setOpenMenuId(openMenuId === cityId ? null : cityId);
+  };
+
+  const handleEdit = (event, city) => {
+    event.stopPropagation();
+    onEdit?.(city);
+    setOpenMenuId(null);
+  };
+
+  const handleDelete = (event, cityId) => {
+    event.stopPropagation();
+    onDelete?.(cityId);
+    setOpenMenuId(null);
+  };
 
   return (
     <div className="cities-table-wrap">
@@ -26,6 +44,11 @@ const CityTable = ({ cities, onSelect, onToggle, canEdit = true }) => {
           </tr>
         </thead>
         <tbody>
+          {cities.length === 0 && (
+            <tr>
+              <td className="table-empty" colSpan={7}>No data available</td>
+            </tr>
+          )}
           {cities.map((city) => (
             <tr key={city._id || city.id}>
               <td>
@@ -45,10 +68,20 @@ const CityTable = ({ cities, onSelect, onToggle, canEdit = true }) => {
               <td>
                 <ToggleSwitch checked={city.adminVerified} onChange={() => onToggle?.(city._id || city.id, 'adminVerified', city)} disabled={!canEdit} />
               </td>
-              <td>
-                <button className="cities-dots" type="button">
-                  <MoreVertical size={16} />
-                </button>
+              <td className="cities-action-cell">
+                {canEdit && (
+                  <>
+                    <button className="cities-dots" type="button" onClick={(event) => toggleMenu(event, city._id || city.id)}>
+                      <MoreVertical size={16} />
+                    </button>
+                    {openMenuId === (city._id || city.id) && (
+                      <div className="cities-action-menu">
+                        <button type="button" onClick={(event) => handleEdit(event, city)}>Edit</button>
+                        <button type="button" onClick={(event) => handleDelete(event, city._id || city.id)}>Delete</button>
+                      </div>
+                    )}
+                  </>
+                )}
               </td>
             </tr>
           ))}

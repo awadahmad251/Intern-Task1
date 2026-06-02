@@ -8,7 +8,9 @@ import { api, isAdminUser } from '../api/client';
 
 const Cities = () => {
   const [showModal, setShowModal] = useState(false);
+  const [editingCity, setEditingCity] = useState(null);
   const [cities, setCities] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [error, setError] = useState('');
@@ -16,11 +18,14 @@ const Cities = () => {
 
   const loadCities = async () => {
     try {
+      setLoading(true);
       const data = await api.get('/api/cities');
       setCities(data.map((city) => ({ ...city, isSelected: false })));
       setError('');
     } catch (err) {
       setError(err.message || 'Failed to load cities.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -43,11 +48,37 @@ const Cities = () => {
 
   const handleCreate = async (payload) => {
     try {
-      const created = await api.post('/api/cities', { name: payload.name });
-      setCities((prev) => [{ ...created, isSelected: false }, ...prev]);
+      if (editingCity) {
+        const updated = await api.put(`/api/cities/${editingCity._id || editingCity.id}`, { name: payload.name });
+        setCities((prev) => prev.map((city) => ((city._id || city.id) === (editingCity._id || editingCity.id)
+          ? { ...city, ...updated }
+          : city)));
+      } else {
+        const created = await api.post('/api/cities', { name: payload.name });
+        setCities((prev) => [{ ...created, isSelected: false }, ...prev]);
+      }
       setShowModal(false);
+      setEditingCity(null);
     } catch (err) {
       setError(err.message || 'Failed to create city.');
+    }
+  };
+
+  const handleEdit = (city) => {
+    setEditingCity(city);
+    setShowModal(true);
+  };
+
+  const handleDelete = async (cityId) => {
+    if (!window.confirm('Delete this city?')) {
+      return;
+    }
+
+    try {
+      await api.del(`/api/cities/${cityId}`);
+      setCities((prev) => prev.filter((city) => (city._id || city.id) !== cityId));
+    } catch (err) {
+      setError(err.message || 'Failed to delete city.');
     }
   };
 
@@ -103,9 +134,29 @@ const Cities = () => {
       </div>
 
       {error && <div className="cities-error">{error}</div>}
-      <CityTable cities={visibleCities} onSelect={handleSelect} onToggle={handleToggle} canEdit={isAdmin} />
+      {loading ? (
+        <div className="page-loading">Loading...</div>
+      ) : (
+        <CityTable
+          cities={visibleCities}
+          onSelect={handleSelect}
+          onToggle={handleToggle}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          canEdit={isAdmin}
+        />
+      )}
 
-      {showModal && isAdmin && <AddCity onClose={() => setShowModal(false)} onSave={handleCreate} />}
+      {showModal && isAdmin && (
+        <AddCity
+          onClose={() => {
+            setShowModal(false);
+            setEditingCity(null);
+          }}
+          onSave={handleCreate}
+          initialData={editingCity}
+        />
+      )}
     </div>
   );
 };

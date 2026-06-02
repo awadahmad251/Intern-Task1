@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './CategoryTable.css';
 import ToggleSwitch from './ToggleSwitch';
 import { MoreVertical, Check } from 'react-feather';
@@ -10,7 +10,25 @@ const CustomCheckbox = ({ checked, onChange }) => (
   </div>
 );
 
-const CategoryTable = ({ categories, onSelect, onToggle, canEdit = true }) => {
+const CategoryTable = ({ categories, onSelect, onToggle, onEdit, onDelete, canEdit = true }) => {
+  const [openMenuId, setOpenMenuId] = useState(null);
+
+  const toggleMenu = (event, categoryId) => {
+    event.stopPropagation();
+    setOpenMenuId(openMenuId === categoryId ? null : categoryId);
+  };
+
+  const handleEdit = (event, category) => {
+    event.stopPropagation();
+    onEdit?.(category);
+    setOpenMenuId(null);
+  };
+
+  const handleDelete = (event, categoryId) => {
+    event.stopPropagation();
+    onDelete?.(categoryId);
+    setOpenMenuId(null);
+  };
 
   return (
     <table className="category-table">
@@ -27,6 +45,11 @@ const CategoryTable = ({ categories, onSelect, onToggle, canEdit = true }) => {
         </tr>
       </thead>
       <tbody>
+        {categories.length === 0 && (
+          <tr>
+            <td className="table-empty" colSpan={8}>No data available</td>
+          </tr>
+        )}
         {categories.map(category => (
           <tr key={category._id || category.id}>
             <td>
@@ -43,8 +66,20 @@ const CategoryTable = ({ categories, onSelect, onToggle, canEdit = true }) => {
             <td>{new Date(category.createdAt || Date.now()).toLocaleDateString()}</td>
             <td><ToggleSwitch checked={category.active} onChange={() => onToggle?.(category._id || category.id, 'active', category)} disabled={!canEdit} /></td>
             <td><ToggleSwitch checked={category.adminVerified} onChange={() => onToggle?.(category._id || category.id, 'adminVerified', category)} disabled={!canEdit} /></td>
-            <td className="action-cell">
-              <MoreVertical className="action-icon" />
+            <td className="category-action-cell">
+              {canEdit && (
+                <>
+                  <button type="button" className="category-dots" onClick={(event) => toggleMenu(event, category._id || category.id)}>
+                    <MoreVertical className="action-icon" />
+                  </button>
+                  {openMenuId === (category._id || category.id) && (
+                    <div className="category-action-menu">
+                      <button type="button" onClick={(event) => handleEdit(event, category)}>Edit</button>
+                      <button type="button" onClick={(event) => handleDelete(event, category._id || category.id)}>Delete</button>
+                    </div>
+                  )}
+                </>
+              )}
             </td>
           </tr>
         ))}

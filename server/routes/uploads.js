@@ -38,4 +38,13 @@ router.post('/', requireAuth, requireAdmin, upload.single('file'), (req, res) =>
   return res.status(201).json({ url: `${baseUrl}${urlPath}` });
 });
 
+router.get('/:filename', (req, res) => {
+  const filePath = path.join(uploadsDir, path.basename(req.params.filename));
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).json({ message: 'File not found.' });
+  }
+
+  return res.sendFile(filePath);
+});
+
 module.exports = router;

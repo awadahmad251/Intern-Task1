@@ -12,13 +12,22 @@ import BannerPage from './pages/BannerPage';
 import LogsPage from './pages/LogsPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsConditionsPage from './pages/TermsConditionsPage';
+import Loader from './components/Loader'
+import PageLoader from "./components/PageLoader";
 import { auth } from './api/client';
 import './App.css';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(Boolean(localStorage.getItem('token')));
   const [isAuthReady, setIsAuthReady] = useState(false);
+// eslint-disable-next-line no-unused-vars
+const [loading, setLoading] = useState(true);
 
+useEffect(() => {
+  setTimeout(() => {
+    setLoading(false);
+  }, 1500);
+}, []);
   useEffect(() => {
     let mounted = true;
 
@@ -67,9 +76,13 @@ function App() {
   if (!isAuthReady) {
     return <div className="app-loading">Loading...</div>;
   }
+  if (loading) {
+  return <Loader />;
+}
 
-  return (
-    <Router>
+return (
+  <Router>
+    <PageLoader>
       <Routes>
         <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginPage />} />
         <Route path="/signup" element={<Navigate to="/" replace />} />
@@ -77,7 +90,7 @@ function App() {
         <Route path="/users" element={isAuthenticated ? <UsersPage /> : <Navigate to="/" />} />
         <Route path="/products" element={isAuthenticated ? <ProductsPage /> : <Navigate to="/" />} />
         <Route path="/categories" element={isAuthenticated ? <CategoriesPage /> : <Navigate to="/" />} />
-        <Route path="/brands" element={isAuthenticated ? <BrandsPage /> : <Navigate to="/" />} /> 
+        <Route path="/brands" element={isAuthenticated ? <BrandsPage /> : <Navigate to="/" />} />
         <Route path="/orders" element={isAuthenticated ? <OrdersPage /> : <Navigate to="/" />} />
         <Route path="/cities" element={isAuthenticated ? <CitiesPage /> : <Navigate to="/" />} />
         <Route path="/banner" element={isAuthenticated ? <BannerPage /> : <Navigate to="/" />} />
@@ -85,8 +98,9 @@ function App() {
         <Route path="/privacy-policy" element={isAuthenticated ? <PrivacyPolicyPage /> : <Navigate to="/" />} />
         <Route path="/terms-conditions" element={isAuthenticated ? <TermsConditionsPage /> : <Navigate to="/" />} />
       </Routes>
-    </Router>
-  );
+    </PageLoader>
+  </Router>
+);
 }
 
 export default App;

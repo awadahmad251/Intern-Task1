@@ -1,0 +1,135 @@
+.update-stock-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1001; /* Higher z-index to be on top of other modals */
+  }
+  
+  .update-stock-modal {
+    background-color: #fff;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 360px;
+    padding: 18px;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
+  }
+  
+  .update-stock-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+  }
+  
+  .update-stock-modal-header h2 {
+    margin: 0;
+    font-size: 18px;
+  }
+  
+  .update-stock-modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  
+  .product-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background-color: #f1f1f1;
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+  
+  .product-image {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  
+  .product-info h3 {
+    margin: 0;
+    font-size: 16px;
+  }
+  
+  .product-info p {
+    margin: 4px 0 0;
+      color: #8a8a8a;
+      font-size: 12px;
+  }
+
+  .stock-stepper {
+      display: grid;
+      grid-template-columns: 44px 1fr 44px;
+      gap: 8px;
+      align-items: center;
+  }
+
+  .stepper-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      border: 1px solid #e6e6e6;
+      background-color: #fff;
+      color: #111;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+  }
+
+  .stepper-btn-dark {
+      background-color: #111;
+      color: #fff;
+      border-color: #111;
+  }
+
+  .stepper-value {
+      height: 44px;
+      border-radius: 10px;
+      background-color: #f1f1f1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: #111;
+  }
+  
+  .update-stock-modal-footer {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+    border-top: 1px solid #eee;
+    padding-top: 12px;
+  }
+  
+  .cancel-button,
+  .save-button {
+    flex: 1;
+    padding: 10px 0;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  
+  .cancel-button {
+    background-color: #efefef;
+    color: #333;
+  }
+  
+  .save-button {
+    background-color: #ff5a2c;
+    color: #fff;
+  }
+  

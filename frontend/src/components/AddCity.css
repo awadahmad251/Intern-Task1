@@ -1,0 +1,82 @@
+.ac-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.ac-modal {
+  background: #ffffff;
+  width: 300px;
+  border-radius: 12px;
+  padding: 20px 20px 0 20px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.22);
+}
+
+.ac-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 14px 0;
+}
+
+.ac-input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #ececec;
+  border-radius: 8px;
+  padding: 11px 14px;
+  font-size: 13px;
+  color: #333;
+  background: #f6f6f6;
+  outline: none;
+  margin-bottom: 16px;
+  font-family: inherit;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.ac-input::placeholder {
+  color: #bbb;
+}
+
+.ac-input:focus {
+  border-color: #e07b54;
+  background: #fff;
+}
+
+.ac-footer {
+  display: flex;
+  gap: 10px;
+  padding: 0 0 18px 0;
+}
+
+.ac-cancel-btn {
+  flex: 1;
+  padding: 12px 0;
+  border: none;
+  border-radius: 8px;
+  background: #f0f0f0;
+  color: #555;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.ac-save-btn {
+  flex: 1;
+  padding: 12px 0;
+  border: none;
+  border-radius: 8px;
+  background: #ff5a2c;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}

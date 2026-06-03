@@ -1,0 +1,54 @@
+.bp-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1010;
+}
+
+.bp-modal {
+  position: relative;
+  width: 520px;
+  max-width: 78vw;
+  background: transparent;
+}
+
+.bp-modal img {
+  width: 100%;
+  border-radius: 10px;
+  display: block;
+  box-shadow: 0 22px 38px rgba(0, 0, 0, 0.42);
+}
+
+.bp-close {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  width: 26px;
+  height: 26px;
+  border-radius: 9px;
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.bp-dots {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  display: flex;
+  gap: 6px;
+}
+
+.bp-dots span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0.8;
+}

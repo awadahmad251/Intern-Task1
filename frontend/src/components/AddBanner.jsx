@@ -1,0 +1,95 @@
+import { useRef, useState } from 'react';
+import './AddBanner.css';
+import { uploads } from '../api/client';
+
+export default function AddBanner({ onClose, onSave }) {
+  const [imageUrl, setImageUrl] = useState('');
+  const [altText, setAltText] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+  const fileInputRef = useRef(null);
+
+  const handleFileChange = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    try {
+      setUploading(true);
+      setUploadError('');
+      const result = await uploads.uploadImage(file);
+      setImageUrl(result.url);
+    } catch (err) {
+      setUploadError(err.message || 'Upload failed.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div className="abn-overlay" onClick={onClose}>
+      <div className="abn-modal" onClick={(event) => event.stopPropagation()}>
+        <h2 className="abn-title">Add Banner</h2>
+
+        <p className="abn-thumb-label">Upload Banner Image</p>
+        <div
+          className="abn-upload-box"
+          role="button"
+          tabIndex={0}
+          onClick={() => fileInputRef.current?.click()}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              fileInputRef.current?.click();
+            }
+          }}
+        >
+          <div className="abn-upload-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="3" width="18" height="18" rx="3" fill="#fff0eb" stroke="#e07b54" strokeWidth="1.4" />
+              <path d="M8.5 12.5l2.5 2.5 4-5" stroke="#e07b54" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+              <circle cx="8.5" cy="8.5" r="1" fill="#e07b54" />
+            </svg>
+          </div>
+          <p className="abn-upload-text">
+            <span className="abn-upload-link">Click to upload</span> or drag and drop
+          </p>
+          <p className="abn-upload-hint">JPG, PNG or PDF (max. 10MB)</p>
+        </div>
+
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          style={{ display: 'none' }}
+          onChange={handleFileChange}
+        />
+
+        {uploading && <p className="abn-upload-hint">Uploading...</p>}
+        {uploadError && <p className="abn-upload-hint">{uploadError}</p>}
+
+        <input
+          className="abn-input"
+          type="text"
+          placeholder="Enter Alternate Text"
+          value={altText}
+          onChange={(event) => setAltText(event.target.value)}
+        />
+
+        <input
+          className="abn-input"
+          type="text"
+          placeholder="Image URL"
+          value={imageUrl}
+          onChange={(event) => setImageUrl(event.target.value)}
+        />
+
+        <div className="abn-footer">
+          <button className="abn-cancel-btn" onClick={onClose} type="button">Cancel</button>
+          <button className="abn-save-btn" onClick={() => onSave?.({ altText, imageUrl })} type="button">Save</button>
+        </div>
+      </div>
+    </div>
+  );
+}

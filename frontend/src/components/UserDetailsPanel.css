@@ -1,0 +1,222 @@
+/* ========================
+   User Details Styles
+   ======================== */
+
+.ud-wrapper {
+  width: 100%;
+  max-width: 360px;
+  min-height: 100vh;
+  background: #ffffff;
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  right: 0;
+  top: 0;
+  margin: 0;
+  box-shadow: -2px 0 8px rgba(0,0,0,0.1);
+  z-index: 100;
+}
+
+/* Back button */
+.ud-back {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 10;
+  width: 34px;
+  height: 34px;
+  background: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+}
+
+/* Cover */
+.ud-cover {
+  width: 100%;
+  height: 140px;
+  background: #f2f2f2;
+  position: relative;
+  overflow: visible;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.ud-cover-pattern {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px;
+  opacity: 0.6;
+}
+
+.ud-cover-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Avatar */
+.ud-avatar-wrap {
+  position: relative;
+  margin: 20px auto 0;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  z-index: 5;
+}
+
+.ud-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Profile info */
+.ud-profile {
+  padding: 0 20px;
+  text-align: center;
+}
+
+.ud-profile-top {
+  display: block;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.ud-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 2px 0;
+}
+
+.ud-role {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e07b54;
+  margin: 0 0 4px 0;
+}
+
+.ud-email {
+  font-size: 12.5px;
+  color: #888;
+  margin: 0;
+}
+
+.ud-edit-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  margin-top: 2px;
+  display: none;
+  align-items: center;
+}
+
+/* Tabs */
+.ud-tabs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 4px;
+  text-align: center;
+}
+
+.ud-tab {
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: none;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  background: transparent;
+  color: #555;
+  transition: background 0.2s, color 0.2s;
+}
+
+.ud-tab--active {
+  background: #e07b54;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Stats list */
+.ud-list {
+  flex: 1;
+  padding: 0 20px;
+  margin-top: center;
+}
+
+.ud-list-item {
+  padding: 14px 0;
+  border-bottom: 1px solid #f0f0f0;
+  text-align: centerpx solid #f0f0f0;
+  text-align: left;
+}
+
+.ud-list-item:last-child {
+  border-bottom: none;
+}
+
+.ud-list-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 4px 0;
+}
+
+.ud-list-value {
+  font-size: 13px;
+  color: #555;
+  margin: 0;
+}
+
+/* Footer */
+.ud-footer {
+  padding: 16px 20px;
+  border-top: 1px solid #f0f0f0;
+  background: #fff;
+  position: sticky;
+  bottom: 0;
+}
+
+.ud-disable-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px;
+  border: none;
+  border-radius: 10px;
+  background: #fff5f2;
+  color: #e07b54;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s;
+}
+
+.ud-disable-btn:hover {
+  background: #fde8e0;
+}
+
+.ud-disable-btn:active {
+  opacity: 0.8;
+}

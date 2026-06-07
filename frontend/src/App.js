@@ -20,14 +20,6 @@ import './App.css';
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(Boolean(localStorage.getItem('token')));
   const [isAuthReady, setIsAuthReady] = useState(false);
-// eslint-disable-next-line no-unused-vars
-const [loading, setLoading] = useState(true);
-
-useEffect(() => {
-  setTimeout(() => {
-    setLoading(false);
-  }, 1500);
-}, []);
   useEffect(() => {
     let mounted = true;
 
@@ -74,11 +66,8 @@ useEffect(() => {
   }, []);
 
   if (!isAuthReady) {
-    return <div className="app-loading">Loading...</div>;
+    return <Loader />;
   }
-  if (loading) {
-  return <Loader />;
-}
 
 return (
   <Router>

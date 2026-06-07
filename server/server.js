@@ -10,7 +10,17 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 5000;
 
-app.use(cors());
+const allowedOrigin = process.env.ALLOWED_ORIGIN || 'http://localhost:5173';
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || origin === allowedOrigin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+}));
 app.use(express.json());
 
 // Simple request logger to help debug frontend API calls
@@ -37,6 +47,12 @@ const orderRoutes = require('./routes/orders');
 const logRoutes = require('./routes/logs');
 
 const uri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/intern_task1';
+if (!process.env.JWT_SECRET) {
+  console.warn('[WARN] JWT_SECRET is not set. Using insecure default — set it in your environment.');
+}
+if (!process.env.MONGO_URI) {
+  console.warn('[WARN] MONGO_URI is not set. Falling back to localhost — set it in your environment.');
+}
 mongoose.connect(uri);
 const connection = mongoose.connection;
 connection.once('open', () => {

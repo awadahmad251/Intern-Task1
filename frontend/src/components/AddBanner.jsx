@@ -1,25 +1,26 @@
-import { useRef, useState } from 'react';
-import './AddBanner.css';
+import React, { useRef, useState } from 'react';
+import './AddBrand.css';
 import { uploads } from '../api/client';
 
-export default function AddBanner({ onClose, onSave }) {
-  const [imageUrl, setImageUrl] = useState('');
-  const [altText, setAltText] = useState('');
+const AddBrand = ({ onClose, onSave, initialData = null, isEdit = false }) => {
+  const [nameEn, setNameEn] = useState(initialData?.nameEn || '');
+  const [nameUr, setNameUr] = useState(initialData?.nameUr || '');
+  const [commission, setCommission] = useState(initialData?.commission ?? '');
+  const [category, setCategory] = useState(initialData?.category?._id || initialData?.category || '');
+  const [city, setCity] = useState(initialData?.city?._id || initialData?.city || '');
+  const [logoUrl, setLogoUrl] = useState(initialData?.logoUrl || '');
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
   const fileInputRef = useRef(null);
 
   const handleFileChange = async (event) => {
     const file = event.target.files?.[0];
-    if (!file) {
-      return;
-    }
-
+    if (!file) return;
     try {
       setUploading(true);
       setUploadError('');
       const result = await uploads.uploadImage(file);
-      setImageUrl(result.url);
+      setLogoUrl(result.url);
     } catch (err) {
       setUploadError(err.message || 'Upload failed.');
     } finally {
@@ -28,13 +29,14 @@ export default function AddBanner({ onClose, onSave }) {
   };
 
   return (
-    <div className="abn-overlay" onClick={onClose}>
-      <div className="abn-modal" onClick={(event) => event.stopPropagation()}>
-        <h2 className="abn-title">Add Banner</h2>
+    <div className="ab-overlay" onClick={onClose}>
+      <div className="ab-modal" onClick={(e) => e.stopPropagation()}>
 
-        <p className="abn-thumb-label">Upload Banner Image</p>
+        <h2 className="ab-title">{isEdit ? 'Edit Brand' : 'Add Brand'}</h2>
+
+        <p className="ab-thumb-label">Thumbnail</p>
         <div
-          className="abn-upload-box"
+          className="ab-upload-box"
           role="button"
           tabIndex={0}
           onClick={() => fileInputRef.current?.click()}
@@ -45,17 +47,23 @@ export default function AddBanner({ onClose, onSave }) {
             }
           }}
         >
-          <div className="abn-upload-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-              <rect x="3" y="3" width="18" height="18" rx="3" fill="#fff0eb" stroke="#e07b54" strokeWidth="1.4" />
-              <path d="M8.5 12.5l2.5 2.5 4-5" stroke="#e07b54" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-              <circle cx="8.5" cy="8.5" r="1" fill="#e07b54" />
-            </svg>
-          </div>
-          <p className="abn-upload-text">
-            <span className="abn-upload-link">Click to upload</span> or drag and drop
-          </p>
-          <p className="abn-upload-hint">JPG, PNG or PDF (max. 10MB)</p>
+          {logoUrl ? (
+            <img src={logoUrl} alt="Logo preview" style={{ width: 56, height: 56, objectFit: 'contain', borderRadius: 6 }} />
+          ) : (
+            <>
+              <div className="ab-upload-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                  <rect x="3" y="3" width="18" height="18" rx="3" fill="#fff0eb" stroke="#e07b54" strokeWidth="1.4" />
+                  <path d="M8.5 12.5l2.5 2.5 4-5" stroke="#e07b54" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                  <circle cx="8.5" cy="8.5" r="1" fill="#e07b54" />
+                </svg>
+              </div>
+              <p className="ab-upload-text">
+                <span className="ab-upload-link">Click to upload</span> or drag and drop
+              </p>
+              <p className="ab-upload-hint">JPG, PNG (max. 10MB)</p>
+            </>
+          )}
         </div>
 
         <input
@@ -66,30 +74,52 @@ export default function AddBanner({ onClose, onSave }) {
           onChange={handleFileChange}
         />
 
-        {uploading && <p className="abn-upload-hint">Uploading...</p>}
-        {uploadError && <p className="abn-upload-hint">{uploadError}</p>}
+        {uploading && <p className="ab-upload-hint">Uploading...</p>}
+        {uploadError && <p className="ab-upload-hint" style={{ color: '#d63c3c' }}>{uploadError}</p>}
 
-        <input
-          className="abn-input"
-          type="text"
-          placeholder="Enter Alternate Text"
-          value={altText}
-          onChange={(event) => setAltText(event.target.value)}
-        />
+        <input className="ab-input" type="text" placeholder="Name in English" value={nameEn} onChange={(e) => setNameEn(e.target.value)} />
+        <input className="ab-input" type="text" placeholder="Name in Urdu" value={nameUr} onChange={(e) => setNameUr(e.target.value)} />
+        <input className="ab-input" type="number" placeholder="Commission (%)" value={commission} onChange={(e) => setCommission(e.target.value)} />
+        <input className="ab-input" type="text" placeholder="Logo URL (or upload above)" value={logoUrl} onChange={(e) => setLogoUrl(e.target.value)} />
 
-        <input
-          className="abn-input"
-          type="text"
-          placeholder="Image URL"
-          value={imageUrl}
-          onChange={(event) => setImageUrl(event.target.value)}
-        />
-
-        <div className="abn-footer">
-          <button className="abn-cancel-btn" onClick={onClose} type="button">Cancel</button>
-          <button className="abn-save-btn" onClick={() => onSave?.({ altText, imageUrl })} type="button">Save</button>
+        <div className="ab-select-wrap">
+          <select className="ab-select" value={category} onChange={(e) => setCategory(e.target.value)}>
+            <option value="">Choose Category</option>
+            <option value="lahore">Lahore</option>
+            <option value="karachi">Karachi</option>
+            <option value="islamabad">Islamabad</option>
+          </select>
+          <span className="ab-select-arrow">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+              <path d="M6 9l6 6 6-6" stroke="#555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </span>
         </div>
+
+        <div className="ab-select-wrap">
+          <select className="ab-select" value={city} onChange={(e) => setCity(e.target.value)}>
+            <option value="">Choose City</option>
+            <option value="lahore">Lahore</option>
+            <option value="karachi">Karachi</option>
+            <option value="islamabad">Islamabad</option>
+          </select>
+          <span className="ab-select-arrow">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+              <path d="M6 9l6 6 6-6" stroke="#555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </span>
+        </div>
+
+        <div className="ab-footer">
+          <button className="ab-cancel-btn" onClick={onClose}>Cancel</button>
+          <button className="ab-save-btn" onClick={() => onSave?.({ nameEn, nameUr, commission, category, city, logoUrl })}>
+            {isEdit ? 'Save Changes' : 'Save'}
+          </button>
+        </div>
+
       </div>
     </div>
   );
-}
+};
+
+export default AddBrand;

@@ -24,6 +24,13 @@ router.get('/', requireAuth, async (req, res) => {
 });
 
 router.post('/', requireAuth, requireAdmin, async (req, res) => {
+  const { nameEn, commission } = req.body;
+  if (!nameEn || typeof nameEn !== 'string' || !nameEn.trim()) {
+    return res.status(400).json({ message: 'nameEn is required.' });
+  }
+  if (commission !== undefined && (isNaN(Number(commission)) || Number(commission) < 0)) {
+    return res.status(400).json({ message: 'Commission must be a non-negative number.' });
+  }
   try {
     const payload = {
       ...req.body,
@@ -39,11 +46,9 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
 
 router.put('/:id', requireAuth, requireAdmin, async (req, res) => {
   try {
-    const payload = {
-      ...req.body,
-      category: normalizeObjectId(req.body.category),
-      city: normalizeObjectId(req.body.city),
-    };
+    const payload = { ...req.body };
+    if ('category' in req.body) payload.category = normalizeObjectId(req.body.category);
+    if ('city' in req.body) payload.city = normalizeObjectId(req.body.city);
     const brand = await Brand.findByIdAndUpdate(req.params.id, payload, { new: true });
     if (!brand) {
       return res.status(404).json({ message: 'Brand not found.' });

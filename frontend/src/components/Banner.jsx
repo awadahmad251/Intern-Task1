@@ -1,16 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Search, MoreVertical, Check } from 'react-feather';
-import './Brands.css';
+import { Search, MoreVertical } from 'react-feather';
+import './Banner.css';
 import './AdminToolbar.css';
-import AddBrand from './AddBrand';
 import ToggleSwitch from './ToggleSwitch';
-import neonLogo from '../assets/images/neonlogo.png';
+import AddBanner from './AddBanner';
+import BannerPreview from './BannerPreview';
+import bannerImage from '../assets/images/banner.png';
 import { api, isAdminUser } from '../api/client';
 
-const Brands = () => {
-  const [showModal, setShowModal] = useState(false);
-  const [editBrand, setEditBrand] = useState(null);
-  const [brands, setBrands] = useState([]);
+const Banner = () => {
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [editBanner, setEditBanner] = useState(null);
+  const [showPreview, setShowPreview] = useState(false);
+  const [previewBanner, setPreviewBanner] = useState(null);
+  const [banners, setBanners] = useState([]);
   const [cities, setCities] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCity, setSelectedCity] = useState('all');
@@ -18,25 +21,23 @@ const Brands = () => {
   const [error, setError] = useState('');
   const [openMenuId, setOpenMenuId] = useState(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
-  const menuRef = useRef(null);
   const isAdmin = isAdminUser();
 
-  const loadBrands = async () => {
+  const loadBanners = async () => {
     try {
-      const data = await api.get('/api/brands');
-      setBrands(data.map((brand) => ({ ...brand, rowId: brand._id, isSelected: false })));
+      const data = await api.get('/api/banners');
+      setBanners(data);
       setError('');
     } catch (err) {
-      setError(err.message || 'Failed to load brands.');
+      setError(err.message || 'Failed to load banners.');
     }
   };
 
   useEffect(() => {
-    loadBrands();
+    loadBanners();
     api.get('/api/cities').then(setCities).catch(() => {});
   }, []);
 
-  // Close menu on outside click
   useEffect(() => {
     if (!openMenuId) return;
     const handleClickOutside = () => setOpenMenuId(null);
@@ -44,112 +45,74 @@ const Brands = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [openMenuId]);
 
-  const handleSelectBrand = (brandId) => {
-    setBrands(brands.map(brand =>
-      brand.rowId === brandId ? { ...brand, isSelected: !brand.isSelected } : brand
-    ));
-  };
-
-  const handleToggle = async (brandId, field) => {
-    const target = brands.find((brand) => brand.rowId === brandId);
-    if (!target) return;
+  const handleSaveBanner = async (payload) => {
     try {
-      const updated = await api.put(`/api/brands/${brandId}`, { [field]: !target[field] });
-      setBrands(brands.map((brand) => (brand.rowId === brandId ? { ...brand, ...updated } : brand)));
+      const created = await api.post('/api/banners', { imageUrl: payload.imageUrl, altText: payload.altText, city: payload.city });
+      setBanners((prev) => [created, ...prev]);
+      setShowAddModal(false);
     } catch (err) {
-      setError(err.message || 'Failed to update brand.');
+      setError(err.message || 'Failed to create banner.');
     }
   };
 
-  const handleAddBrand = async (payload) => {
+  const handleEditBanner = async (payload) => {
+    if (!editBanner) return;
     try {
-      const created = await api.post('/api/brands', {
-        nameEn: payload.nameEn,
-        nameUr: payload.nameUr,
-        commission: Number(payload.commission || 0),
-        category: payload.category,
-        city: payload.city,
-        logoUrl: payload.logoUrl,
-      });
-      setBrands((prev) => [{ ...created, rowId: created._id, isSelected: false }, ...prev]);
-      setShowModal(false);
+      const updated = await api.put(`/api/banners/${editBanner._id}`, { imageUrl: payload.imageUrl, altText: payload.altText });
+      setBanners((prev) => prev.map((b) => (b._id === editBanner._id ? { ...b, ...updated } : b)));
+      setEditBanner(null);
     } catch (err) {
-      setError(err.message || 'Failed to create brand.');
+      setError(err.message || 'Failed to update banner.');
     }
   };
 
-  const handleEditBrand = async (payload) => {
-    if (!editBrand) return;
+  const handleDeleteBanner = async (bannerId) => {
     try {
-      const body = {
-        nameEn: payload.nameEn,
-        nameUr: payload.nameUr,
-        commission: Number(payload.commission || 0),
-        logoUrl: payload.logoUrl,
-      };
-      if (payload.category) body.category = payload.category;
-      if (payload.city) body.city = payload.city;
-
-      const updated = await api.put(`/api/brands/${editBrand._id}`, body);
-      setBrands((prev) =>
-        prev.map((b) => (b.rowId === editBrand._id ? { ...b, ...updated, rowId: updated._id } : b))
-      );
-      setEditBrand(null);
-    } catch (err) {
-      setError(err.message || 'Failed to update brand.');
-    }
-  };
-
-  const handleDeleteBrand = async (brandId) => {
-    try {
-      await api.del(`/api/brands/${brandId}`);
-      setBrands((prev) => prev.filter((b) => b.rowId !== brandId));
+      await api.del(`/api/banners/${bannerId}`);
+      setBanners((prev) => prev.filter((b) => b._id !== bannerId));
       setDeleteConfirmId(null);
       setOpenMenuId(null);
     } catch (err) {
-      setError(err.message || 'Failed to delete brand.');
+      setError(err.message || 'Failed to delete banner.');
     }
   };
 
-  const visibleBrands = brands.filter((brand) => {
+  const handleToggle = async (bannerId, field, banner) => {
+    try {
+      const updated = await api.put(`/api/banners/${bannerId}`, { [field]: !banner[field] });
+      setBanners((prev) => prev.map((item) => (item._id === bannerId ? { ...item, ...updated } : item)));
+    } catch (err) {
+      setError(err.message || 'Failed to update banner.');
+    }
+  };
+
+  const visibleBanners = banners.filter((banner) => {
     const query = searchTerm.trim().toLowerCase();
-    const matchesSearch = !query || [brand.nameEn, brand.nameUr, brand._id]
-      .filter(Boolean)
-      .some((value) => String(value).toLowerCase().includes(query));
-    const brandCityId = brand.city?._id || brand.city || '';
-    const matchesCity = selectedCity === 'all' || brandCityId === selectedCity;
-    const matchesStatus =
-      selectedStatus === 'all' ||
-      (selectedStatus === 'active' && brand.active) ||
-      (selectedStatus === 'inactive' && !brand.active) ||
-      (selectedStatus === 'verified' && brand.adminVerified) ||
-      (selectedStatus === 'unverified' && !brand.adminVerified);
+    const matchesSearch = !query || [banner.altText, banner._id, banner.imageUrl].filter(Boolean).some((v) => String(v).toLowerCase().includes(query));
+    const bannerCityId = banner.city?._id || banner.city || '';
+    const matchesCity = selectedCity === 'all' || bannerCityId === selectedCity;
+    const matchesStatus = selectedStatus === 'all'
+      || (selectedStatus === 'active' && banner.active)
+      || (selectedStatus === 'inactive' && !banner.active)
+      || (selectedStatus === 'verified' && banner.adminVerified)
+      || (selectedStatus === 'unverified' && !banner.adminVerified);
     return matchesSearch && matchesCity && matchesStatus;
   });
 
   return (
-    <div className="brands-container">
-      {/* Top Bar */}
-      <div className="brands-topbar">
-        <h1 className="brands-heading">Brands</h1>
-        <div className="brands-toolbar">
-          <div className="brands-search">
-            <Search size={15} className="brands-search-icon" />
-            <input
-              type="text"
-              placeholder="Search by name, id..."
-              className="brands-search-input"
-              value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
-            />
+    <div className="banner-container">
+      <div className="banner-topbar">
+        <h1 className="banner-heading">Banner</h1>
+        <div className="banner-toolbar">
+          <div className="banner-search">
+            <Search size={15} className="banner-search-icon" />
+            <input type="text" placeholder="Search by Alternate Text" className="banner-search-input" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
           </div>
-          <select className="brands-filter-select" value={selectedCity} onChange={(event) => setSelectedCity(event.target.value)}>
+          <select className="banner-filter-select" value={selectedCity} onChange={(e) => setSelectedCity(e.target.value)}>
             <option value="all">City</option>
-            {cities.map((city) => (
-              <option key={city._id || city.id} value={city._id || city.id}>{city.name}</option>
-            ))}
+            {cities.map((city) => <option key={city._id} value={city._id}>{city.name}</option>)}
           </select>
-          <select className="brands-filter-select" value={selectedStatus} onChange={(event) => setSelectedStatus(event.target.value)}>
+          <select className="banner-filter-select" value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)}>
             <option value="all">Status</option>
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
@@ -157,156 +120,81 @@ const Brands = () => {
             <option value="unverified">Unverified</option>
           </select>
           {(searchTerm || selectedCity !== 'all' || selectedStatus !== 'all') && (
-            <button
-              type="button"
-              className="brands-clear-btn"
-              onClick={() => {
-                setSearchTerm('');
-                setSelectedCity('all');
-                setSelectedStatus('all');
-              }}
-            >
-              Clear Filters
-            </button>
+            <button type="button" className="banner-clear-btn" onClick={() => { setSearchTerm(''); setSelectedCity('all'); setSelectedStatus('all'); }}>Clear Filters</button>
           )}
-          {isAdmin && (
-            <button className="brands-add-btn" onClick={() => setShowModal(true)}>
-              + Add Brand
-            </button>
-          )}
+          {isAdmin && <button className="banner-add-btn" type="button" onClick={() => setShowAddModal(true)}>+ Add New</button>}
         </div>
       </div>
 
-      {error && <div className="brands-error">{error}</div>}
-
-      {/* Table */}
-      <div className="brands-table-wrap">
-        <table className="brands-table">
+      <div className="banner-table-wrap">
+        <table className="banner-table">
           <thead>
             <tr>
-              <th></th>
-              <th>Name</th>
-              <th>Urdu Name</th>
-              <th>ID</th>
-              <th>Commission (%)</th>
-              <th>Created on</th>
+              <th>Banner</th>
+              <th>Alternate Text</th>
+              <th>Created Date</th>
               <th>Status</th>
               <th>Admin Verified</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
-            {visibleBrands.length === 0 ? (
-              <tr>
-                <td colSpan={9} className="brands-empty">
-                  No brands found.
+            {visibleBanners.length === 0 && (
+              <tr><td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: '#aaa', fontSize: '14px' }}>No banners found.</td></tr>
+            )}
+            {visibleBanners.map((banner) => (
+              <tr key={banner._id} onClick={() => { setPreviewBanner(banner); setShowPreview(true); }} className="banner-row">
+                <td><div className="banner-image-cell"><img src={banner.imageUrl || bannerImage} alt={banner.altText || 'Banner'} /></div></td>
+                <td className="banner-muted">{banner.altText || '-'}</td>
+                <td>
+                  <div className="banner-date">
+                    <span>{new Date(banner.createdAt || Date.now()).toLocaleDateString()}</span>
+                    <span className="banner-time">{new Date(banner.createdAt || Date.now()).toLocaleTimeString()}</span>
+                  </div>
+                </td>
+                <td onClick={(e) => e.stopPropagation()}><ToggleSwitch checked={banner.active} onChange={() => handleToggle(banner._id, 'active', banner)} disabled={!isAdmin} /></td>
+                <td onClick={(e) => e.stopPropagation()}><ToggleSwitch checked={banner.adminVerified} onChange={() => handleToggle(banner._id, 'adminVerified', banner)} disabled={!isAdmin} /></td>
+                <td onClick={(e) => e.stopPropagation()} style={{ position: 'relative' }}>
+                  {isAdmin && (
+                    <div style={{ position: 'relative', display: 'inline-block' }}>
+                      <button className="banner-dots" type="button" onClick={(e) => { e.stopPropagation(); setOpenMenuId(openMenuId === banner._id ? null : banner._id); }}>
+                        <MoreVertical size={16} />
+                      </button>
+                      {openMenuId === banner._id && (
+                        <div className="banner-dropdown">
+                          <button className="banner-dropdown-item" onClick={(e) => { e.stopPropagation(); setEditBanner(banner); setOpenMenuId(null); }}>Edit</button>
+                          <button className="banner-dropdown-item banner-dropdown-delete" onClick={(e) => { e.stopPropagation(); setDeleteConfirmId(banner._id); setOpenMenuId(null); }}>Delete</button>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </td>
               </tr>
-            ) : (
-              visibleBrands.map((brand) => (
-                <tr key={brand.rowId}>
-                  <td>
-                    <div
-                      className={`custom-checkbox ${brand.isSelected ? 'checked' : ''}`}
-                      onClick={() => handleSelectBrand(brand.rowId)}
-                    >
-                      {brand.isSelected && <Check className="tick" size={16} />}
-                    </div>
-                  </td>
-                  <td>
-                    <div className="brands-name-cell">
-                      <div className="brands-logo">
-                        <img src={brand.logoUrl || neonLogo} alt={brand.nameEn} />
-                      </div>
-                      <span className="brands-name">{brand.nameEn}</span>
-                    </div>
-                  </td>
-                  <td className="brands-urdu">{brand.nameUr}</td>
-                  <td className="brands-muted">{brand._id?.slice(-6) || brand.id}</td>
-                  <td className="brands-muted">{brand.commission}%</td>
-                  <td className="brands-muted">{new Date(brand.createdAt || Date.now()).toLocaleDateString()}</td>
-                  <td>
-                    <ToggleSwitch
-                      checked={brand.active}
-                      onChange={() => handleToggle(brand.rowId, 'active')}
-                      disabled={!isAdmin}
-                    />
-                  </td>
-                  <td>
-                    <ToggleSwitch
-                      checked={brand.adminVerified}
-                      onChange={() => handleToggle(brand.rowId, 'adminVerified')}
-                      disabled={!isAdmin}
-                    />
-                  </td>
-                  <td style={{ position: 'relative' }}>
-                    {isAdmin && (
-                      <div style={{ position: 'relative', display: 'inline-block' }}>
-                        <button
-                          className="brands-dots"
-                          type="button"
-                          onClick={() => setOpenMenuId(openMenuId === brand.rowId ? null : brand.rowId)}
-                        >
-                          <MoreVertical size={16} />
-                        </button>
-                        {openMenuId === brand.rowId && (
-                          <div className="brands-dropdown">
-                            <button
-                              className="brands-dropdown-item"
-                              onClick={() => {
-                                setEditBrand(brand);
-                                setOpenMenuId(null);
-                              }}
-                            >
-                              Edit
-                            </button>
-                            <button
-                              className="brands-dropdown-item brands-dropdown-delete"
-                              onClick={() => setDeleteConfirmId(brand.rowId)}
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </td>
-                </tr>
-              ))
-            )}
+            ))}
           </tbody>
         </table>
       </div>
 
-      {/* Delete confirm dialog */}
+      {error && <div className="banner-error">{error}</div>}
+
+      {/* Delete confirm */}
       {deleteConfirmId && (
-        <div className="brands-confirm-overlay" onClick={() => setDeleteConfirmId(null)}>
-          <div className="brands-confirm-box" onClick={(e) => e.stopPropagation()}>
-            <p className="brands-confirm-text">Delete this brand? This cannot be undone.</p>
-            <div className="brands-confirm-actions">
-              <button className="brands-cancel-btn" onClick={() => setDeleteConfirmId(null)}>Cancel</button>
-              <button className="brands-delete-btn" onClick={() => handleDeleteBrand(deleteConfirmId)}>Delete</button>
+        <div className="banner-confirm-overlay" onClick={() => setDeleteConfirmId(null)}>
+          <div className="banner-confirm-box" onClick={(e) => e.stopPropagation()}>
+            <p className="banner-confirm-text">Delete this banner? This cannot be undone.</p>
+            <div className="banner-confirm-actions">
+              <button className="banner-cancel-btn" onClick={() => setDeleteConfirmId(null)}>Cancel</button>
+              <button className="banner-delete-btn" onClick={() => handleDeleteBanner(deleteConfirmId)}>Delete</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Add Brand Modal */}
-      {showModal && isAdmin && (
-        <AddBrand onClose={() => setShowModal(false)} onSave={handleAddBrand} />
-      )}
-
-      {/* Edit Brand Modal */}
-      {editBrand && isAdmin && (
-        <AddBrand
-          onClose={() => setEditBrand(null)}
-          onSave={handleEditBrand}
-          initialData={editBrand}
-          isEdit
-        />
-      )}
+      {showAddModal && isAdmin && <AddBanner onClose={() => setShowAddModal(false)} onSave={handleSaveBanner} />}
+      {editBanner && isAdmin && <AddBanner onClose={() => setEditBanner(null)} onSave={handleEditBanner} initialData={editBanner} isEdit />}
+      {showPreview && <BannerPreview image={previewBanner?.imageUrl || bannerImage} onClose={() => setShowPreview(false)} />}
     </div>
   );
 };
 
-export default Brands;
+export default Banner;

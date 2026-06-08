@@ -38,14 +38,11 @@ const Brands = () => {
 
   // Close menu on outside click
   useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
-        setOpenMenuId(null);
-      }
-    };
+    if (!openMenuId) return;
+    const handleClickOutside = () => setOpenMenuId(null);
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [openMenuId]);
 
   const handleSelectBrand = (brandId) => {
     setBrands(brands.map(brand =>
@@ -244,7 +241,7 @@ const Brands = () => {
                   </td>
                   <td style={{ position: 'relative' }}>
                     {isAdmin && (
-                      <div ref={openMenuId === brand.rowId ? menuRef : null} style={{ position: 'relative', display: 'inline-block' }}>
+                      <div style={{ position: 'relative', display: 'inline-block' }}>
                         <button
                           className="brands-dots"
                           type="button"

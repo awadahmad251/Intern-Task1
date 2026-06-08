@@ -1,101 +1,155 @@
-import React, { useEffect, useState } from 'react';
-import { Search, MoreVertical } from 'react-feather';
-import './Banner.css';
+import React, { useEffect, useRef, useState } from 'react';
+import { Search, MoreVertical, Check } from 'react-feather';
+import './Brands.css';
 import './AdminToolbar.css';
+import AddBrand from './AddBrand';
 import ToggleSwitch from './ToggleSwitch';
-import AddBanner from './AddBanner';
-import BannerPreview from './BannerPreview';
-import bannerImage from '../assets/images/banner.png';
+import neonLogo from '../assets/images/neonlogo.png';
 import { api, isAdminUser } from '../api/client';
 
-const Banner = () => {
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showPreview, setShowPreview] = useState(false);
-  const [banners, setBanners] = useState([]);
+const Brands = () => {
+  const [showModal, setShowModal] = useState(false);
+  const [editBrand, setEditBrand] = useState(null);
+  const [brands, setBrands] = useState([]);
   const [cities, setCities] = useState([]);
-  const [selectedBanner, setSelectedBanner] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCity, setSelectedCity] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [error, setError] = useState('');
+  const [openMenuId, setOpenMenuId] = useState(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState(null);
+  const menuRef = useRef(null);
   const isAdmin = isAdminUser();
 
-  const loadBanners = async () => {
+  const loadBrands = async () => {
     try {
-      const data = await api.get('/api/banners');
-      setBanners(data);
+      const data = await api.get('/api/brands');
+      setBrands(data.map((brand) => ({ ...brand, rowId: brand._id, isSelected: false })));
       setError('');
     } catch (err) {
-      setError(err.message || 'Failed to load banners.');
+      setError(err.message || 'Failed to load brands.');
     }
   };
 
   useEffect(() => {
-    loadBanners();
+    loadBrands();
     api.get('/api/cities').then(setCities).catch(() => {});
   }, []);
 
-  const handleSaveBanner = async (payload) => {
+  // Close menu on outside click
+  useEffect(() => {
+    if (!openMenuId) return;
+    const handleClickOutside = () => setOpenMenuId(null);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [openMenuId]);
+
+  const handleSelectBrand = (brandId) => {
+    setBrands(brands.map(brand =>
+      brand.rowId === brandId ? { ...brand, isSelected: !brand.isSelected } : brand
+    ));
+  };
+
+  const handleToggle = async (brandId, field) => {
+    const target = brands.find((brand) => brand.rowId === brandId);
+    if (!target) return;
     try {
-      const created = await api.post('/api/banners', {
-        imageUrl: payload.imageUrl,
-        altText: payload.altText,
+      const updated = await api.put(`/api/brands/${brandId}`, { [field]: !target[field] });
+      setBrands(brands.map((brand) => (brand.rowId === brandId ? { ...brand, ...updated } : brand)));
+    } catch (err) {
+      setError(err.message || 'Failed to update brand.');
+    }
+  };
+
+  const handleAddBrand = async (payload) => {
+    try {
+      const created = await api.post('/api/brands', {
+        nameEn: payload.nameEn,
+        nameUr: payload.nameUr,
+        commission: Number(payload.commission || 0),
+        category: payload.category,
         city: payload.city,
+        logoUrl: payload.logoUrl,
       });
-      setBanners((prev) => [created, ...prev]);
-      setShowAddModal(false);
+      setBrands((prev) => [{ ...created, rowId: created._id, isSelected: false }, ...prev]);
+      setShowModal(false);
     } catch (err) {
-      setError(err.message || 'Failed to create banner.');
+      setError(err.message || 'Failed to create brand.');
     }
   };
 
-  const handlePreviewOpen = (banner) => {
-    setSelectedBanner(banner);
-    setShowPreview(true);
-  };
-
-  const handleToggle = async (bannerId, field, banner) => {
+  const handleEditBrand = async (payload) => {
+    if (!editBrand) return;
     try {
-      const updated = await api.put(`/api/banners/${bannerId}`, { [field]: !banner[field] });
-      setBanners((prev) => prev.map((item) => (item._id === bannerId ? { ...item, ...updated } : item)));
+      const body = {
+        nameEn: payload.nameEn,
+        nameUr: payload.nameUr,
+        commission: Number(payload.commission || 0),
+        logoUrl: payload.logoUrl,
+      };
+      if (payload.category) body.category = payload.category;
+      if (payload.city) body.city = payload.city;
+
+      const updated = await api.put(`/api/brands/${editBrand._id}`, body);
+      setBrands((prev) =>
+        prev.map((b) => (b.rowId === editBrand._id ? { ...b, ...updated, rowId: updated._id } : b))
+      );
+      setEditBrand(null);
     } catch (err) {
-      setError(err.message || 'Failed to update banner.');
+      setError(err.message || 'Failed to update brand.');
     }
   };
 
-  const visibleBanners = banners.filter((banner) => {
+  const handleDeleteBrand = async (brandId) => {
+    try {
+      await api.del(`/api/brands/${brandId}`);
+      setBrands((prev) => prev.filter((b) => b.rowId !== brandId));
+      setDeleteConfirmId(null);
+      setOpenMenuId(null);
+    } catch (err) {
+      setError(err.message || 'Failed to delete brand.');
+    }
+  };
+
+  const visibleBrands = brands.filter((brand) => {
     const query = searchTerm.trim().toLowerCase();
-    const matchesSearch = !query || [banner.altText, banner._id, banner.imageUrl]
+    const matchesSearch = !query || [brand.nameEn, brand.nameUr, brand._id]
       .filter(Boolean)
       .some((value) => String(value).toLowerCase().includes(query));
-
-    const bannerCityId = banner.city?._id || banner.city || '';
-    const matchesCity = selectedCity === 'all' || bannerCityId === selectedCity;
-    const matchesStatus = selectedStatus === 'all'
-      || (selectedStatus === 'active' && banner.active)
-      || (selectedStatus === 'inactive' && !banner.active)
-      || (selectedStatus === 'verified' && banner.adminVerified)
-      || (selectedStatus === 'unverified' && !banner.adminVerified);
-
+    const brandCityId = brand.city?._id || brand.city || '';
+    const matchesCity = selectedCity === 'all' || brandCityId === selectedCity;
+    const matchesStatus =
+      selectedStatus === 'all' ||
+      (selectedStatus === 'active' && brand.active) ||
+      (selectedStatus === 'inactive' && !brand.active) ||
+      (selectedStatus === 'verified' && brand.adminVerified) ||
+      (selectedStatus === 'unverified' && !brand.adminVerified);
     return matchesSearch && matchesCity && matchesStatus;
   });
 
   return (
-    <div className="banner-container">
-      <div className="banner-topbar">
-        <h1 className="banner-heading">Banner</h1>
-        <div className="banner-toolbar">
-          <div className="banner-search">
-            <Search size={15} className="banner-search-icon" />
-            <input type="text" placeholder="Search by Alternate Text" className="banner-search-input" value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} />
+    <div className="brands-container">
+      {/* Top Bar */}
+      <div className="brands-topbar">
+        <h1 className="brands-heading">Brands</h1>
+        <div className="brands-toolbar">
+          <div className="brands-search">
+            <Search size={15} className="brands-search-icon" />
+            <input
+              type="text"
+              placeholder="Search by name, id..."
+              className="brands-search-input"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+            />
           </div>
-          <select className="banner-filter-select" value={selectedCity} onChange={(event) => setSelectedCity(event.target.value)}>
+          <select className="brands-filter-select" value={selectedCity} onChange={(event) => setSelectedCity(event.target.value)}>
             <option value="all">City</option>
             {cities.map((city) => (
               <option key={city._id || city.id} value={city._id || city.id}>{city.name}</option>
             ))}
           </select>
-          <select className="banner-filter-select" value={selectedStatus} onChange={(event) => setSelectedStatus(event.target.value)}>
+          <select className="brands-filter-select" value={selectedStatus} onChange={(event) => setSelectedStatus(event.target.value)}>
             <option value="all">Status</option>
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
@@ -105,7 +159,7 @@ const Banner = () => {
           {(searchTerm || selectedCity !== 'all' || selectedStatus !== 'all') && (
             <button
               type="button"
-              className="banner-clear-btn"
+              className="brands-clear-btn"
               onClick={() => {
                 setSearchTerm('');
                 setSelectedCity('all');
@@ -116,67 +170,143 @@ const Banner = () => {
             </button>
           )}
           {isAdmin && (
-            <button className="banner-add-btn" type="button" onClick={() => setShowAddModal(true)}>
-              + Add New
+            <button className="brands-add-btn" onClick={() => setShowModal(true)}>
+              + Add Brand
             </button>
           )}
         </div>
       </div>
 
-      <div className="banner-table-wrap">
-        <table className="banner-table">
+      {error && <div className="brands-error">{error}</div>}
+
+      {/* Table */}
+      <div className="brands-table-wrap">
+        <table className="brands-table">
           <thead>
             <tr>
-              <th>Banner</th>
-              <th>Alternate Text</th>
-              <th>Created Date</th>
+              <th></th>
+              <th>Name</th>
+              <th>Urdu Name</th>
+              <th>ID</th>
+              <th>Commission (%)</th>
+              <th>Created on</th>
               <th>Status</th>
               <th>Admin Verified</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
-            {visibleBanners.map((banner) => (
-              <tr key={banner._id} onClick={() => handlePreviewOpen(banner)} className="banner-row">
-                <td>
-                  <div className="banner-image-cell">
-                    <img src={banner.imageUrl || bannerImage} alt={banner.altText || 'Banner'} />
-                  </div>
-                </td>
-                <td className="banner-muted">{banner.altText || '-'}</td>
-                <td>
-                  <div className="banner-date">
-                    <span>{new Date(banner.createdAt || Date.now()).toLocaleDateString()}</span>
-                    <span className="banner-time">{new Date(banner.createdAt || Date.now()).toLocaleTimeString()}</span>
-                  </div>
-                </td>
-                <td onClick={(e) => e.stopPropagation()}><ToggleSwitch checked={banner.active} onChange={() => handleToggle(banner._id, 'active', banner)} disabled={!isAdmin} /></td>
-                <td onClick={(e) => e.stopPropagation()}><ToggleSwitch checked={banner.adminVerified} onChange={() => handleToggle(banner._id, 'adminVerified', banner)} disabled={!isAdmin} /></td>
-                <td onClick={(e) => e.stopPropagation()}>
-                  <button className="banner-dots" type="button">
-                    <MoreVertical size={16} />
-                  </button>
+            {visibleBrands.length === 0 ? (
+              <tr>
+                <td colSpan={9} className="brands-empty">
+                  No brands found.
                 </td>
               </tr>
-            ))}
+            ) : (
+              visibleBrands.map((brand) => (
+                <tr key={brand.rowId}>
+                  <td>
+                    <div
+                      className={`custom-checkbox ${brand.isSelected ? 'checked' : ''}`}
+                      onClick={() => handleSelectBrand(brand.rowId)}
+                    >
+                      {brand.isSelected && <Check className="tick" size={16} />}
+                    </div>
+                  </td>
+                  <td>
+                    <div className="brands-name-cell">
+                      <div className="brands-logo">
+                        <img src={brand.logoUrl || neonLogo} alt={brand.nameEn} />
+                      </div>
+                      <span className="brands-name">{brand.nameEn}</span>
+                    </div>
+                  </td>
+                  <td className="brands-urdu">{brand.nameUr}</td>
+                  <td className="brands-muted">{brand._id?.slice(-6) || brand.id}</td>
+                  <td className="brands-muted">{brand.commission}%</td>
+                  <td className="brands-muted">{new Date(brand.createdAt || Date.now()).toLocaleDateString()}</td>
+                  <td>
+                    <ToggleSwitch
+                      checked={brand.active}
+                      onChange={() => handleToggle(brand.rowId, 'active')}
+                      disabled={!isAdmin}
+                    />
+                  </td>
+                  <td>
+                    <ToggleSwitch
+                      checked={brand.adminVerified}
+                      onChange={() => handleToggle(brand.rowId, 'adminVerified')}
+                      disabled={!isAdmin}
+                    />
+                  </td>
+                  <td style={{ position: 'relative' }}>
+                    {isAdmin && (
+                      <div style={{ position: 'relative', display: 'inline-block' }}>
+                        <button
+                          className="brands-dots"
+                          type="button"
+                          onClick={() => setOpenMenuId(openMenuId === brand.rowId ? null : brand.rowId)}
+                        >
+                          <MoreVertical size={16} />
+                        </button>
+                        {openMenuId === brand.rowId && (
+                          <div className="brands-dropdown">
+                            <button
+                              className="brands-dropdown-item"
+                              onClick={() => {
+                                setEditBrand(brand);
+                                setOpenMenuId(null);
+                              }}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              className="brands-dropdown-item brands-dropdown-delete"
+                              onClick={() => setDeleteConfirmId(brand.rowId)}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
 
-      {error && <div className="banner-error">{error}</div>}
-
-      {showAddModal && isAdmin && (
-        <AddBanner
-          onClose={() => setShowAddModal(false)}
-          onSave={handleSaveBanner}
-        />
+      {/* Delete confirm dialog */}
+      {deleteConfirmId && (
+        <div className="brands-confirm-overlay" onClick={() => setDeleteConfirmId(null)}>
+          <div className="brands-confirm-box" onClick={(e) => e.stopPropagation()}>
+            <p className="brands-confirm-text">Delete this brand? This cannot be undone.</p>
+            <div className="brands-confirm-actions">
+              <button className="brands-cancel-btn" onClick={() => setDeleteConfirmId(null)}>Cancel</button>
+              <button className="brands-delete-btn" onClick={() => handleDeleteBrand(deleteConfirmId)}>Delete</button>
+            </div>
+          </div>
+        </div>
       )}
 
-      {showPreview && (
-        <BannerPreview image={selectedBanner?.imageUrl || bannerImage} onClose={() => setShowPreview(false)} />
+      {/* Add Brand Modal */}
+      {showModal && isAdmin && (
+        <AddBrand onClose={() => setShowModal(false)} onSave={handleAddBrand} />
+      )}
+
+      {/* Edit Brand Modal */}
+      {editBrand && isAdmin && (
+        <AddBrand
+          onClose={() => setEditBrand(null)}
+          onSave={handleEditBrand}
+          initialData={editBrand}
+          isEdit
+        />
       )}
     </div>
   );
 };
 
-export default Banner;
+export default Brands;

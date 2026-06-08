@@ -1,122 +1,95 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import LoginPage from './pages/LoginPage';
+import DashboardPage from './pages/DashboardPage';
+import UsersPage from './pages/UsersPage';
+import ProductsPage from './pages/ProductsPage';
+import CategoriesPage from './pages/CategoriesPage';
+import BrandsPage from './pages/BrandsPage';
+import OrdersPage from './pages/OrdersPage';
+import CitiesPage from './pages/CitiesPage';
+import BannerPage from './pages/BannerPage';
+import LogsPage from './pages/LogsPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import TermsConditionsPage from './pages/TermsConditionsPage';
+import Loader from './components/Loader'
+import PageLoader from "./components/PageLoader";
+import { auth } from './api/client';
+import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [isAuthenticated, setIsAuthenticated] = useState(Boolean(localStorage.getItem('token')));
+  const [isAuthReady, setIsAuthReady] = useState(false);
+  useEffect(() => {
+    let mounted = true;
 
-  return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    const verifyAuth = async () => {
+      const token = localStorage.getItem('token');
 
-      <div className="ticks"></div>
+      if (!token) {
+        if (mounted) {
+          setIsAuthenticated(false);
+          setIsAuthReady(true);
+        }
+        return;
+      }
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+      try {
+        const result = await auth.me();
+        localStorage.setItem('user', JSON.stringify(result.user));
+        if (mounted) {
+          setIsAuthenticated(true);
+        }
+      } catch (error) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        if (mounted) {
+          setIsAuthenticated(false);
+        }
+      } finally {
+        if (mounted) {
+          setIsAuthReady(true);
+        }
+      }
+    };
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+    verifyAuth();
+
+    const syncAuth = () => setIsAuthenticated(Boolean(localStorage.getItem('token')));
+    window.addEventListener('storage', syncAuth);
+    window.addEventListener('auth-changed', syncAuth);
+    return () => {
+      mounted = false;
+      window.removeEventListener('storage', syncAuth);
+      window.removeEventListener('auth-changed', syncAuth);
+    };
+  }, []);
+
+  if (!isAuthReady) {
+    return <Loader />;
+  }
+
+return (
+  <Router>
+    <PageLoader>
+      <Routes>
+        <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginPage />} />
+        <Route path="/signup" element={<Navigate to="/" replace />} />
+        <Route path="/dashboard" element={isAuthenticated ? <DashboardPage /> : <Navigate to="/" />} />
+        <Route path="/users" element={isAuthenticated ? <UsersPage /> : <Navigate to="/" />} />
+        <Route path="/products" element={isAuthenticated ? <ProductsPage /> : <Navigate to="/" />} />
+        <Route path="/categories" element={isAuthenticated ? <CategoriesPage /> : <Navigate to="/" />} />
+        <Route path="/brands" element={isAuthenticated ? <BrandsPage /> : <Navigate to="/" />} />
+        <Route path="/orders" element={isAuthenticated ? <OrdersPage /> : <Navigate to="/" />} />
+        <Route path="/cities" element={isAuthenticated ? <CitiesPage /> : <Navigate to="/" />} />
+        <Route path="/banner" element={isAuthenticated ? <BannerPage /> : <Navigate to="/" />} />
+        <Route path="/logs" element={isAuthenticated ? <LogsPage /> : <Navigate to="/" />} />
+        <Route path="/privacy-policy" element={isAuthenticated ? <PrivacyPolicyPage /> : <Navigate to="/" />} />
+        <Route path="/terms-conditions" element={isAuthenticated ? <TermsConditionsPage /> : <Navigate to="/" />} />
+      </Routes>
+    </PageLoader>
+  </Router>
+);
 }
 
-export default App
+export default App;

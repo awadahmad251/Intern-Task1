@@ -50,10 +50,7 @@ router.post('/', requireAuth, async (req, res) => {
   try {
     const isAdmin = req.user?.role === 'admin';
     const retailerId = isAdmin ? normalizeObjectId(req.body.retailer) : req.user?.id;
-    const contactEmail = req.body.contactEmail || req.user?.email;
-    if (!contactEmail) {
-      return res.status(400).json({ message: 'Contact email is required.' });
-    }
+    const contactEmail = req.body.contactEmail || req.user?.email || '';
 
     const otpCode = generateOtp();
     const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
@@ -103,15 +100,15 @@ router.post('/', requireAuth, async (req, res) => {
 
 router.put('/:id', requireAuth, requireAdmin, async (req, res) => {
   try {
-    const payload = {
-      ...req.body,
-      retailer: normalizeObjectId(req.body.retailer),
-      city: normalizeObjectId(req.body.city),
-      items: (req.body.items || []).map((item) => ({
+    const payload = { ...req.body };
+    if ('retailer' in req.body) payload.retailer = normalizeObjectId(req.body.retailer);
+    if ('city' in req.body) payload.city = normalizeObjectId(req.body.city);
+    if ('items' in req.body) {
+      payload.items = req.body.items.map((item) => ({
         ...item,
         product: normalizeObjectId(item.product),
-      })),
-    };
+      }));
+    }
     const order = await Order.findByIdAndUpdate(req.params.id, payload, { new: true });
     if (!order) {
       return res.status(404).json({ message: 'Order not found.' });
@@ -131,6 +128,44 @@ router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
     return res.json({ message: 'Order deleted.' });
   } catch (error) {
     return res.status(500).json({ message: 'Failed to delete order.' });
+  }
+});
+
+// GET single order by ID
+router.get('/:id', requireAuth, async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id)
+      .select('-otpCode')
+      .populate('retailer', 'name')
+      .populate('city', 'name')
+      .populate('items.product', 'nameEn');
+    if (!order) return res.status(404).json({ message: 'Order not found.' });
+    const isOwner = String(order.retailer?._id || order.retailer) === String(req.user?.id);
+    if (req.user?.role !== 'admin' && !isOwner) return res.status(403).json({ message: 'Forbidden.' });
+    return res.json(order);
+  } catch (error) {
+    return res.status(500).json({ message: 'Failed to fetch order.' });
+  }
+});
+
+// POST verify OTP for an order
+router.post('/:id/verify-otp', requireAuth, async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+    if (!order) return res.status(404).json({ message: 'Order not found.' });
+    if (order.otpVerified) return res.status(400).json({ message: 'OTP already verified.' });
+    if (!order.otpCode || order.otpCode !== String(req.body.otp)) {
+      return res.status(400).json({ message: 'Invalid OTP.' });
+    }
+    if (order.otpExpiresAt && new Date() > order.otpExpiresAt) {
+      return res.status(400).json({ message: 'OTP has expired.' });
+    }
+    order.otpVerified = true;
+    order.otpCode = '';
+    await order.save();
+    return res.json({ message: 'OTP verified successfully.', orderId: order.orderId });
+  } catch (error) {
+    return res.status(500).json({ message: 'Failed to verify OTP.' });
   }
 });
 

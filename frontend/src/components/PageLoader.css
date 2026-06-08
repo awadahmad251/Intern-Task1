@@ -1,0 +1,18 @@
+.page-loader-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 999;
+  background: transparent;
+  pointer-events: none;
+}
+
+.page-loader-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff5a2c, #ff8a5c);
+  border-radius: 0 2px 2px 0;
+  transition: width 0.2s ease-out;
+  box-shadow: 0 0 8px rgba(255, 90, 44, 0.5);
+}

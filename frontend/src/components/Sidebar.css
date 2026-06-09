@@ -18,14 +18,14 @@
   font-weight: 800;
   color: #ff5a2c;
   padding: 0 20px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   letter-spacing: -0.3px;
 }
 
 .sidebar nav ul {
   list-style: none;
   padding: 0;
-  margin: 0;
+  margin: 0 0 8px;
 }
 
 .sidebar nav li { margin: 0; }
@@ -36,10 +36,11 @@
   font-size: 13px;
   display: flex;
   align-items: center;
-  gap: 9px;
-  padding: 9px 20px;
+  gap: 10px;
+  padding: 10px 20px;
   border-left: 3px solid transparent;
   transition: color 0.15s, background 0.15s;
+  line-height: 1.2;
 }
 
 .sidebar nav a:hover {

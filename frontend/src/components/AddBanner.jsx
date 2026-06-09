@@ -31,21 +31,12 @@ const AddBrand = ({ onClose, onSave, initialData = null, isEdit = false }) => {
   return (
     <div className="ab-overlay" onClick={onClose}>
       <div className="ab-modal" onClick={(e) => e.stopPropagation()}>
-
         <h2 className="ab-title">{isEdit ? 'Edit Brand' : 'Add Brand'}</h2>
 
         <p className="ab-thumb-label">Thumbnail</p>
-        <div
-          className="ab-upload-box"
-          role="button"
-          tabIndex={0}
+        <div className="ab-upload-box" role="button" tabIndex={0}
           onClick={() => fileInputRef.current?.click()}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter' || event.key === ' ') {
-              event.preventDefault();
-              fileInputRef.current?.click();
-            }
-          }}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInputRef.current?.click(); } }}
         >
           {logoUrl ? (
             <img src={logoUrl} alt="Logo preview" style={{ width: 56, height: 56, objectFit: 'contain', borderRadius: 6 }} />
@@ -53,27 +44,18 @@ const AddBrand = ({ onClose, onSave, initialData = null, isEdit = false }) => {
             <>
               <div className="ab-upload-icon">
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-                  <rect x="3" y="3" width="18" height="18" rx="3" fill="#fff0eb" stroke="#e07b54" strokeWidth="1.4" />
-                  <path d="M8.5 12.5l2.5 2.5 4-5" stroke="#e07b54" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-                  <circle cx="8.5" cy="8.5" r="1" fill="#e07b54" />
+                  <rect x="3" y="3" width="18" height="18" rx="3" fill="#fff0eb" stroke="#e07b54" strokeWidth="1.4"/>
+                  <path d="M8.5 12.5l2.5 2.5 4-5" stroke="#e07b54" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                  <circle cx="8.5" cy="8.5" r="1" fill="#e07b54"/>
                 </svg>
               </div>
-              <p className="ab-upload-text">
-                <span className="ab-upload-link">Click to upload</span> or drag and drop
-              </p>
+              <p className="ab-upload-text"><span className="ab-upload-link">Click to upload</span> or drag and drop</p>
               <p className="ab-upload-hint">JPG, PNG (max. 10MB)</p>
             </>
           )}
         </div>
 
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          style={{ display: 'none' }}
-          onChange={handleFileChange}
-        />
-
+        <input ref={fileInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleFileChange} />
         {uploading && <p className="ab-upload-hint">Uploading...</p>}
         {uploadError && <p className="ab-upload-hint" style={{ color: '#d63c3c' }}>{uploadError}</p>}
 
@@ -89,11 +71,6 @@ const AddBrand = ({ onClose, onSave, initialData = null, isEdit = false }) => {
             <option value="karachi">Karachi</option>
             <option value="islamabad">Islamabad</option>
           </select>
-          <span className="ab-select-arrow">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-              <path d="M6 9l6 6 6-6" stroke="#555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </span>
         </div>
 
         <div className="ab-select-wrap">
@@ -103,11 +80,6 @@ const AddBrand = ({ onClose, onSave, initialData = null, isEdit = false }) => {
             <option value="karachi">Karachi</option>
             <option value="islamabad">Islamabad</option>
           </select>
-          <span className="ab-select-arrow">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-              <path d="M6 9l6 6 6-6" stroke="#555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </span>
         </div>
 
         <div className="ab-footer">
@@ -116,7 +88,6 @@ const AddBrand = ({ onClose, onSave, initialData = null, isEdit = false }) => {
             {isEdit ? 'Save Changes' : 'Save'}
           </button>
         </div>
-
       </div>
     </div>
   );

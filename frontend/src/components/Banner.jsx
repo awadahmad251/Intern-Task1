@@ -7,6 +7,7 @@ import AddBanner from './AddBanner';
 import BannerPreview from './BannerPreview';
 import bannerImage from '../assets/images/banner.png';
 import { api, isAdminUser } from '../api/client';
+import ConfirmDialog from './ConfirmDialog';
 
 const Banner = () => {
   const [showAddModal, setShowAddModal] = useState(false);
@@ -177,17 +178,12 @@ const Banner = () => {
 
       {error && <div className="banner-error">{error}</div>}
 
-      {/* Delete confirm */}
       {deleteConfirmId && (
-        <div className="banner-confirm-overlay" onClick={() => setDeleteConfirmId(null)}>
-          <div className="banner-confirm-box" onClick={(e) => e.stopPropagation()}>
-            <p className="banner-confirm-text">Delete this banner? This cannot be undone.</p>
-            <div className="banner-confirm-actions">
-              <button className="banner-cancel-btn" onClick={() => setDeleteConfirmId(null)}>Cancel</button>
-              <button className="banner-delete-btn" onClick={() => handleDeleteBanner(deleteConfirmId)}>Delete</button>
-            </div>
-          </div>
-        </div>
+        <ConfirmDialog
+          message="Delete this banner? This cannot be undone."
+          onConfirm={() => handleDeleteBanner(deleteConfirmId)}
+          onCancel={() => setDeleteConfirmId(null)}
+        />
       )}
 
       {showAddModal && isAdmin && <AddBanner onClose={() => setShowAddModal(false)} onSave={handleSaveBanner} />}

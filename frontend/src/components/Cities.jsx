@@ -5,6 +5,7 @@ import './AdminToolbar.css';
 import CityTable from './CityTable';
 import AddCity from './AddCity';
 import { api, isAdminUser } from '../api/client';
+import ConfirmDialog from './ConfirmDialog';
 
 const Cities = () => {
   const [showModal, setShowModal] = useState(false);
@@ -14,6 +15,7 @@ const Cities = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [error, setError] = useState('');
+  const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const isAdmin = isAdminUser();
 
   const loadCities = async () => {
@@ -144,6 +146,14 @@ const Cities = () => {
           onEdit={handleEdit}
           onDelete={handleDelete}
           canEdit={isAdmin}
+        />
+      )}
+
+      {deleteConfirmId && (
+        <ConfirmDialog
+          message="Delete this city? This cannot be undone."
+          onConfirm={confirmDelete}
+          onCancel={() => setDeleteConfirmId(null)}
         />
       )}
 

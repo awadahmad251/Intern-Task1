@@ -1,197 +1,174 @@
-/* =====================
-   Brands Page Styles
-   ===================== */
-
 .brands-container {
-  padding: 28px;
+  padding: 24px 28px;
   font-family: 'Segoe UI', sans-serif;
   flex: 1;
-  background: #f7f7f7;
-  min-height: 100%;
+  min-width: 0;
 }
 
-.brands-error {
-  background: #fff2f0;
-  border: 1px solid #ffcabd;
-  color: #a1402c;
-  padding: 10px 12px;
-  border-radius: 6px;
-  margin: 12px 0;
-  font-size: 14px;
-}
-
-/* Top bar */
 .brands-topbar {
   display: flex;
-  flex-direction: row;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: 20px;
-  flex-wrap: nowrap;
-  gap: 12px;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
 .brands-heading {
-  font-size: 22px;
+  margin: 0;
+  font-size: 24px;
   font-weight: 700;
   color: #1a1a1a;
-  margin: 0;
 }
 
 .brands-toolbar {
   display: flex;
   align-items: center;
   gap: 10px;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
 }
 
-/* Search */
 .brands-search {
   display: flex;
   align-items: center;
-  gap: 8px;
-  border: 1px solid #e4e4e4;
-  border-radius: 10px;
-  padding: 8px 12px;
+  gap: 7px;
   background: #fff;
+  border: 1px solid #e4e4e4;
+  border-radius: 8px;
+  padding: 7px 12px;
+  min-width: 200px;
 }
 
-.brands-search-icon {
-  color: #aaa;
-  flex-shrink: 0;
-}
+.brands-search svg { color: #aaa; flex-shrink: 0; }
 
 .brands-search-input {
   border: none;
   outline: none;
-  font-size: 12.5px;
+  font-size: 13px;
   color: #333;
   background: transparent;
-  width: 170px;
-  font-family: inherit;
+  width: 100%;
+  font-family: 'Segoe UI', sans-serif;
 }
 
-.brands-search-input::placeholder {
-  color: #bbb;
-}
-
-/* Filter buttons */
-.brands-filter-btn {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  border: 1px solid #e4e4e4;
-  border-radius: 10px;
-  padding: 8px 14px;
-  background: #fff;
-  font-size: 12.5px;
-  color: #444;
-  cursor: pointer;
-  font-family: inherit;
-  transition: border-color 0.2s;
-}
-
-.brands-filter-btn:hover {
-  border-color: #ccc;
-}
+.brands-search-input::placeholder { color: #bbb; }
 
 .brands-filter-select {
+  padding: 7px 28px 7px 12px;
   border: 1px solid #e4e4e4;
-  border-radius: 10px;
-  padding: 8px 14px;
-  background: #fff;
-  font-size: 12.5px;
-  color: #444;
+  border-radius: 8px;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center;
+  -webkit-appearance: none;
+  appearance: none;
+  font-size: 13px;
+  color: #555;
+  font-family: 'Segoe UI', sans-serif;
   cursor: pointer;
-  font-family: inherit;
 }
+
+.brands-add-btn {
+  background: #ffeee7;
+  color: #ff5a2c;
+  padding: 7px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13.5px;
+  font-weight: 600;
+  font-family: 'Segoe UI', sans-serif;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.brands-add-btn:hover { background: #ffddd0; }
 
 .brands-clear-btn {
-  border: 1px solid #e4e4e4;
-  border-radius: 10px;
-  padding: 8px 14px;
-  background: #fff;
-  font-size: 12.5px;
-  color: #444;
-  cursor: pointer;
-  font-family: inherit;
-}
-
-.brands-clear-btn:hover {
-  background: #f7f7f7;
-}
-
-/* Add Brand button */
-.brands-add-btn {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  border: 1px solid #ffd2c0;
-  border-radius: 10px;
-  padding: 8px 14px;
-  background: #ffe7dc;
-  color: #ff5a2c;
+  padding: 7px 12px;
+  background: #f5f5f5;
+  border: none;
+  border-radius: 8px;
   font-size: 13px;
-  font-weight: 600;
+  color: #666;
   cursor: pointer;
-  font-family: inherit;
-  transition: background 0.2s;
-  white-space: nowrap;
+  font-family: 'Segoe UI', sans-serif;
 }
 
-.brands-add-btn:hover {
-  background: #ffd7c6;
+.brands-error {
+  background: #fff2f0;
+  border: 1px solid #ffcabd;
+  color: #a1402c;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 14px;
+  font-size: 13px;
 }
 
-/* Table */
 .brands-table-wrap {
-  background: transparent;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #efefef;
+  overflow-x: auto;
 }
 
 .brands-table {
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0 10px;
-  font-size: 13px;
+  border-collapse: collapse;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 13.5px;
 }
+
+.brands-table thead tr { border-bottom: 1px solid #efefef; }
 
 .brands-table th {
+  padding: 12px 14px;
   text-align: left;
-  padding: 10px 15px;
-  font-size: 12px;
+  font-size: 12.5px;
   font-weight: 600;
-  color: #888;
+  color: #999;
   white-space: nowrap;
-}
-
-.brands-table th:nth-child(3) {
-  text-align: center;
+  background: #fff;
 }
 
 .brands-table td {
-  padding: 15px;
-  color: #333;
+  padding: 12px 14px;
+  color: #2a2a2a;
   vertical-align: middle;
-  background-color: #fff;
-  border-top: 1px solid #f0f0f0;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f5f5f5;
+  background: #fff;
 }
 
-.brands-table tr {
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+.brands-table tbody tr:last-child td { border-bottom: none; }
+.brands-table tbody tr:hover td { background: #fafafa; }
+
+/* Checkbox */
+.custom-checkbox {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 2px solid #ccc;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+  background: #fff;
 }
 
-.brands-table td:first-child {
-  border-top-left-radius: 8px;
-  border-bottom-left-radius: 8px;
-  border-left: 1px solid #f0f0f0;
+.custom-checkbox.checked {
+  background: #1a1a1a;
+  border-color: #1a1a1a;
 }
 
-.brands-table td:last-child {
-  border-top-right-radius: 8px;
-  border-bottom-right-radius: 8px;
-  border-right: 1px solid #f0f0f0;
+.custom-checkbox.checked::after {
+  content: '';
+  width: 5px;
+  height: 9px;
+  border: 2px solid #fff;
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg) translateY(-1px);
+  display: block;
 }
 
 /* Name cell */
@@ -202,107 +179,43 @@
 }
 
 .brands-logo {
-  width: 24px;
-  height: 24px;
+  width: 30px;
+  height: 30px;
   border-radius: 6px;
   overflow: hidden;
   flex-shrink: 0;
+  background: #f5f5f5;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #fff;
 }
 
 .brands-logo img {
-  width: 20px;
-  height: 20px;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
-.brands-name {
-  font-weight: 500;
-  color: #1a1a1a;
-}
+.brands-name { font-weight: 600; }
+.brands-urdu { color: #555; }
+.brands-muted { color: #888; }
 
-.brands-urdu {
-  direction: rtl;
-  color: #555;
-  text-align: center;
-}
-
-.brands-muted {
-  color: #777;
-}
-
-/* Dots */
+/* Dots button */
 .brands-dots {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 6px;
-  border-radius: 8px;
-  transition: background 0.15s;
-  display: flex;
-  align-items: center;
-  color: #888;
-}
-
-.brands-dots:hover {
-  background: #f2f2f2;
-}
-
-.custom-checkbox {
-  width: 20px;
-  height: 20px;
-  background-color: #fff;
-  border: 2px solid #ddd;
+  padding: 4px;
+  color: #aaa;
   border-radius: 5px;
   display: flex;
-  justify-content: center;
   align-items: center;
-  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
 }
 
-.custom-checkbox.checked {
-  background-color: #333;
-  border-color: #333;
-}
+.brands-dots:hover { color: #555; background: #f0f0f0; }
 
-.custom-checkbox .tick {
-  color: #fff;
-  visibility: hidden;
-}
-
-.custom-checkbox.checked .tick {
-  visibility: visible;
-}
-
-@media (max-width: 1100px) {
-  .brands-topbar {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .brands-toolbar {
-    width: 100%;
-    flex-wrap: wrap;
-  }
-}
-
-@media (max-width: 640px) {
-  .brands-toolbar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .brands-search,
-  .brands-filter-select,
-  .brands-clear-btn,
-  .brands-add-btn {
-    width: 100%;
-  }
-}
-
-/* Dropdown menu */
+/* Dropdown */
 .brands-dropdown {
   position: absolute;
   right: 0;
@@ -326,22 +239,14 @@
   font-size: 13px;
   color: #333;
   cursor: pointer;
-  font-family: inherit;
+  font-family: 'Segoe UI', sans-serif;
 }
 
-.brands-dropdown-item:hover {
-  background: #f7f7f7;
-}
+.brands-dropdown-item:hover { background: #f7f7f7; }
+.brands-dropdown-delete { color: #d63c3c; }
+.brands-dropdown-delete:hover { background: #fff5f5; }
 
-.brands-dropdown-delete {
-  color: #d63c3c;
-}
-
-.brands-dropdown-delete:hover {
-  background: #fff5f5;
-}
-
-/* Delete confirm dialog */
+/* Confirm dialog */
 .brands-confirm-overlay {
   position: fixed;
   inset: 0;
@@ -361,17 +266,8 @@
   box-shadow: 0 8px 32px rgba(0,0,0,0.15);
 }
 
-.brands-confirm-text {
-  font-size: 15px;
-  color: #1a1a1a;
-  margin: 0 0 20px;
-}
-
-.brands-confirm-actions {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-}
+.brands-confirm-text { font-size: 15px; color: #1a1a1a; margin: 0 0 20px; }
+.brands-confirm-actions { display: flex; gap: 10px; justify-content: flex-end; }
 
 .brands-cancel-btn {
   padding: 8px 18px;
@@ -380,7 +276,7 @@
   background: #fff;
   font-size: 13px;
   cursor: pointer;
-  font-family: inherit;
+  font-family: 'Segoe UI', sans-serif;
   color: #444;
 }
 
@@ -393,17 +289,14 @@
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  font-family: inherit;
+  font-family: 'Segoe UI', sans-serif;
 }
 
-.brands-delete-btn:hover {
-  background: #c02f2f;
-}
+.brands-delete-btn:hover { background: #c02f2f; }
 
-/* Empty state */
 .brands-empty {
   text-align: center;
   padding: 48px 0;
-  color: #aaa;
+  color: #bbb;
   font-size: 14px;
 }

@@ -3,9 +3,11 @@ import './UserTable.css';
 import ToggleSwitch from './ToggleSwitch';
 import { MoreVertical, Eye } from 'react-feather';
 import { formatPakCnic } from '../utils/formatters';
+import ConfirmDialog from './ConfirmDialog';
 
 const UserTable = ({ users, onRowClick, onToggle, onDelete, onEdit, canEdit = true }) => {
   const [openMenuId, setOpenMenuId] = useState(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState(null);
 
   const handleRowClick = (user) => { setOpenMenuId(null); onRowClick(user); };
 
@@ -16,7 +18,7 @@ const UserTable = ({ users, onRowClick, onToggle, onDelete, onEdit, canEdit = tr
 
   const handleDelete = (e, userId) => {
     e.stopPropagation();
-    if (window.confirm('Delete this user?')) onDelete?.(userId);
+    setDeleteConfirmId(userId);
     setOpenMenuId(null);
   };
 
@@ -27,6 +29,7 @@ const UserTable = ({ users, onRowClick, onToggle, onDelete, onEdit, canEdit = tr
   };
 
   return (
+    <>
     <table className="user-table">
       <thead>
         <tr>
@@ -96,6 +99,15 @@ const UserTable = ({ users, onRowClick, onToggle, onDelete, onEdit, canEdit = tr
         })}
       </tbody>
     </table>
+
+    {deleteConfirmId && (
+      <ConfirmDialog
+        message="Delete this user? This cannot be undone."
+        onConfirm={() => { onDelete?.(deleteConfirmId); setDeleteConfirmId(null); }}
+        onCancel={() => setDeleteConfirmId(null)}
+      />
+    )}
+    </>
   );
 };
 

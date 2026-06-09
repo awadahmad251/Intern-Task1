@@ -1,78 +1,74 @@
 .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    background-color: #fff;
-    border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 28px;
+  background: #fff;
+  border-bottom: 1px solid #efefef;
   gap: 16px;
-  }
-
-  .header-welcome h2 {
-      margin: 0;
-      font-size: 20px;
-  }
-
-  .header-welcome p {
-    margin: 0;
-    color: #888;
+  min-height: 64px;
+  flex-shrink: 0;
 }
-  
-  .user-info {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-  }
 
-  .profile-button {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    cursor: pointer;
-    text-align: left;
-    color: inherit;
-  }
+.header-welcome h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
 
-  .notification-icon {
-      width: 24px;
-      height: 24px;
-      cursor: pointer;
-  }
+.header-welcome p {
+  margin: 2px 0 0;
+  color: #b0b0b0;
+  font-size: 12px;
+}
 
-  .user-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      object-fit: cover;
-  }
-  
-  .user-name {
-    font-weight: bold;
-    display: block;
-  }
-  
-  .user-role {
-    color: #888;
-    font-size: 14px;
-  }
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+}
 
-  @media (max-width: 768px) {
-    .header {
-      flex-direction: column;
-      align-items: flex-start;
-      padding: 16px;
-    }
+.notification-icon {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  opacity: 0.55;
+  transition: opacity 0.15s;
+}
 
-    .user-info {
-      width: 100%;
-      justify-content: space-between;
-    }
+.notification-icon:hover { opacity: 1; }
 
-    .profile-button {
-      flex: 1;
-    }
-  }
-  
+.profile-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #f0f0f0;
+}
+
+.user-name {
+  font-weight: 700;
+  display: block;
+  font-size: 13px;
+  color: #1a1a1a;
+}
+
+.user-role {
+  color: #b0b0b0;
+  font-size: 11px;
+  display: block;
+  text-transform: capitalize;
+}

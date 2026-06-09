@@ -1,135 +1,137 @@
 .users-container {
-    padding: 20px;
+  padding: 24px 28px;
+  font-family: 'Segoe UI', sans-serif;
+  flex: 1;
   min-width: 0;
-  }
+}
 
 .users-error {
   background: #fff2f0;
   border: 1px solid #ffcabd;
   color: #a1402c;
-  padding: 10px 12px;
-  border-radius: 6px;
-  margin-bottom: 12px;
-  font-size: 14px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 14px;
+  font-size: 13px;
 }
-  
-  .users-header h1 {
-      margin: 0 0 20px 0;
-  }
 
-  .tabs {
-    display: inline-flex;
-    background-color: #fff;
-    border-radius: 8px;
-    padding: 5px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-  
-  .tabs button {
-    padding: 10px 20px;
-    border: none;
-    background-color: transparent;
-    cursor: pointer;
-    font-size: 16px;
-    margin-right: 10px;
-    border-radius: 5px;
-    color: #000;
-    font-weight: 500;
-  }
+/* Tabs */
+.tabs {
+  display: inline-flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 8px;
+  padding: 4px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  gap: 2px;
+}
 
-  .tabs button:last-child {
-      margin-right: 0;
-  }
-  
-  .tabs button.active {
-    background-color: #ff4500;
-    color: white;
-    font-weight: bold;
-  }
-  
-  .page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    gap: 16px;
-    flex-wrap: wrap;
+.tabs button {
+  padding: 7px 18px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 13.5px;
+  border-radius: 6px;
+  color: #555;
+  font-weight: 500;
+  font-family: 'Segoe UI', sans-serif;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.tabs button:hover { color: #ff5a2c; }
+
+.tabs button.active {
+  background: #ff5a2c;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Page header row */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
 .page-header h1 {
-    margin: 0;
-    font-size: 28px;
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #1a1a1a;
 }
 
+/* Toolbar */
 .toolbar {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   flex-wrap: wrap;
-  }
-  
-  .toolbar input,
-  .toolbar select {
-    padding: 8px 12px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: white;
-  }
-  
-  .add-user-btn {
-    background-color: #ffeadb;
-    color: #ff4500;
-    padding: 8px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-  }
+}
 
-  .users-table-wrap {
-    width: 100%;
-    overflow-x: auto;
-    padding-bottom: 4px;
-  }
+.toolbar-search {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: #fff;
+  border: 1px solid #e4e4e4;
+  border-radius: 8px;
+  padding: 7px 12px;
+  min-width: 200px;
+}
 
-  @media (max-width: 900px) {
-    .users-container {
-      padding: 16px;
-    }
+.toolbar-search svg { color: #aaa; flex-shrink: 0; }
 
-    .page-header {
-      align-items: flex-start;
-    }
+.toolbar-search input {
+  border: none;
+  outline: none;
+  font-size: 13px;
+  color: #333;
+  background: transparent;
+  width: 100%;
+  font-family: 'Segoe UI', sans-serif;
+}
 
-    .toolbar input {
-      min-width: 220px;
-      flex: 1 1 220px;
-    }
-  }
+.toolbar-search input::placeholder { color: #bbb; }
 
-  @media (max-width: 640px) {
-    .tabs {
-      display: flex;
-      width: 100%;
-    }
+.toolbar select {
+  padding: 7px 28px 7px 12px;
+  border: 1px solid #e4e4e4;
+  border-radius: 8px;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center;
+  -webkit-appearance: none;
+  appearance: none;
+  font-size: 13px;
+  color: #555;
+  font-family: 'Segoe UI', sans-serif;
+  cursor: pointer;
+}
 
-    .tabs button {
-      margin-right: 0;
-      flex: 1 1 calc(50% - 6px);
-    }
+.add-user-btn {
+  background: #ffeee7;
+  color: #ff5a2c;
+  padding: 7px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13.5px;
+  font-weight: 600;
+  font-family: 'Segoe UI', sans-serif;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
 
-    .toolbar {
-      width: 100%;
-    }
+.add-user-btn:hover { background: #ffddd0; }
 
-    .toolbar input,
-    .toolbar select,
-    .add-user-btn {
-      width: 100%;
-    }
-  }
-  
+.users-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #efefef;
+}

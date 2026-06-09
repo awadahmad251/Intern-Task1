@@ -1,159 +1,137 @@
-.user-table {
-  width: 100%;
-  border-collapse: collapse;
+.users-container {
+  padding: 24px 28px;
   font-family: 'Segoe UI', sans-serif;
-  font-size: 13.5px;
+  flex: 1;
+  min-width: 0;
 }
 
-.user-table thead tr {
-  border-bottom: 1px solid #efefef;
+.users-error {
+  background: #fff2f0;
+  border: 1px solid #ffcabd;
+  color: #a1402c;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 14px;
+  font-size: 13px;
 }
 
-.user-table th {
-  padding: 12px 14px;
-  text-align: left;
-  font-size: 12.5px;
-  font-weight: 600;
-  color: #999;
-  white-space: nowrap;
+/* Tabs */
+.tabs {
+  display: inline-flex;
+  align-items: center;
   background: #fff;
+  border-radius: 8px;
+  padding: 4px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  gap: 2px;
 }
 
-.user-table td {
-  padding: 12px 14px;
-  color: #2a2a2a;
-  vertical-align: middle;
-  border-bottom: 1px solid #f5f5f5;
-  background: #fff;
-}
-
-.user-table tbody tr:last-child td { border-bottom: none; }
-
-.user-table tbody tr:hover td { background: #fafafa; }
-
-/* Custom checkbox */
-.user-checkbox {
-  width: 18px;
-  height: 18px;
-  border-radius: 5px;
-  border: 2px solid #ccc;
+.tabs button {
+  padding: 7px 18px;
+  border: none;
+  background: transparent;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: all 0.15s;
-  background: #fff;
-}
-
-.user-checkbox.checked {
-  background: #1a1a1a;
-  border-color: #1a1a1a;
-}
-
-.user-checkbox.checked::after {
-  content: '';
-  width: 5px;
-  height: 9px;
-  border: 2px solid #fff;
-  border-top: none;
-  border-left: none;
-  transform: rotate(45deg) translateY(-1px);
-  display: block;
-}
-
-/* Name cell */
-.user-info-cell {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-}
-
-.user-name-text {
-  font-weight: 600;
   font-size: 13.5px;
+  border-radius: 6px;
+  color: #555;
+  font-weight: 500;
+  font-family: 'Segoe UI', sans-serif;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.tabs button:hover { color: #ff5a2c; }
+
+.tabs button.active {
+  background: #ff5a2c;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Page header row */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
   color: #1a1a1a;
 }
 
-.user-email {
-  font-size: 12px;
-  color: #aaa;
-  margin-top: 1px;
-}
-
-/* Action cell */
-.action-cell {
+/* Toolbar */
+.toolbar {
   display: flex;
   align-items: center;
-  gap: 4px;
-  position: relative;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
-.icon-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
-  color: #aaa;
+.toolbar-search {
   display: flex;
   align-items: center;
-  border-radius: 5px;
-  transition: color 0.15s, background 0.15s;
-}
-
-.icon-button:hover {
-  color: #555;
-  background: #f0f0f0;
-}
-
-.action-icon {
-  width: 16px;
-  height: 16px;
-}
-
-.action-menu {
-  position: absolute;
-  right: 0;
-  top: 100%;
+  gap: 7px;
   background: #fff;
   border: 1px solid #e4e4e4;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  z-index: 100;
-  min-width: 110px;
-  overflow: hidden;
+  padding: 7px 12px;
+  min-width: 200px;
 }
 
-.action-menu button {
-  display: block;
-  width: 100%;
-  padding: 9px 14px;
-  background: none;
+.toolbar-search svg { color: #aaa; flex-shrink: 0; }
+
+.toolbar-search input {
   border: none;
-  text-align: left;
+  outline: none;
   font-size: 13px;
   color: #333;
-  cursor: pointer;
+  background: transparent;
+  width: 100%;
   font-family: 'Segoe UI', sans-serif;
 }
 
-.action-menu button:hover { background: #f7f7f7; }
+.toolbar-search input::placeholder { color: #bbb; }
 
-.action-menu button:last-child { color: #d63c3c; }
+.toolbar select {
+  padding: 7px 28px 7px 12px;
+  border: 1px solid #e4e4e4;
+  border-radius: 8px;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center;
+  -webkit-appearance: none;
+  appearance: none;
+  font-size: 13px;
+  color: #555;
+  font-family: 'Segoe UI', sans-serif;
+  cursor: pointer;
+}
 
-.action-menu button:last-child:hover { background: #fff5f5; }
+.add-user-btn {
+  background: #ffeee7;
+  color: #ff5a2c;
+  padding: 7px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13.5px;
+  font-weight: 600;
+  font-family: 'Segoe UI', sans-serif;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
 
-.user-table-empty {
-  text-align: center;
-  padding: 48px 0;
-  color: #bbb;
-  font-size: 14px;
+.add-user-btn:hover { background: #ffddd0; }
+
+.users-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #efefef;
 }

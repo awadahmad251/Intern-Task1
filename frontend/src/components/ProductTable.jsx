@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './ProductTable.css';
 import ToggleSwitch from './ToggleSwitch';
-import { MoreVertical, Check } from 'react-feather';
+import { MoreVertical } from 'react-feather';
 import UpdateStockModal from './UpdateStockModal';
 import ProductDetailsPanel from './ProductDetailsPanel';
 import AddProductModal from './AddProductModal';
@@ -10,11 +10,7 @@ import wheatBag from '../assets/images/wheatbag.png';
 import { api } from '../api/client';
 import Swal from 'sweetalert2';
 
-const CustomCheckbox = ({ checked, onChange }) => (
-    <div className={`custom-checkbox ${checked ? 'checked' : ''}`} onClick={onChange}>
-        {checked && <Check className="tick" size={16} />}
-    </div>
-);
+
 
 const ProductTable = ({ products, setProducts, setError, canEdit = true, categories = [], brands = [], cities = [] }) => {
     const [isStockModalOpen, setIsStockModalOpen] = useState(false);
@@ -127,26 +123,29 @@ const ProductTable = ({ products, setProducts, setError, canEdit = true, categor
                     {products.map(product => (
                         <tr key={product._id} onClick={() => handleRowClick(product)}>
                             <td onClick={(e) => e.stopPropagation()}>
-                                <CustomCheckbox checked={product.isSelected} onChange={() => handleSelectProduct(product._id)} />
+                                <div className={`product-checkbox ${product.isSelected ? 'checked' : ''}`} onClick={() => handleSelectProduct(product._id)} />
                             </td>
                             <td>
-                                <div className="product-info-cell">
-                                    <img src={product.imageUrl || wheatBag} alt={product.nameEn} className="product-image" />
+                                <div className="product-name-cell">
+                                    <img src={product.imageUrl || wheatBag} alt={product.nameEn} className="product-thumb" />
                                     <div>
-                                        {product.nameEn}
-                                        <div className="product-code">{product.code || product._id?.slice(-6)}</div>
+                                        <div className="product-name-text">{product.nameEn}</div>
+                                        <div className="product-id-text">#{product.code || product._id?.slice(-6)}</div>
                                     </div>
                                 </div>
                             </td>
-                            <td><img src={product.brand?.logoUrl || neonLogo} alt={product.brand?.nameEn || 'Brand'} className="brand-logo" /></td>
+                            <td>
+                                <div className="brand-cell">
+                                    <img src={product.brand?.logoUrl || neonLogo} alt={product.brand?.nameEn || 'Brand'} className="brand-logo" />
+                                    <span>{product.brand?.nameEn || '—'}</span>
+                                </div>
+                            </td>
                             <td>{product.category?.nameEn || '-'}</td>
                             <td>{product.packings?.[0]?.size || '-'}</td>
                             <td>{product.price}</td>
                             <td onClick={(e) => e.stopPropagation()}>
-                                <div className="stock-cell">
-                                    <div className="stock-value">{product.stock}</div>
-                                    <button className="update-stock-btn" onClick={() => openStockModal(product)} disabled={!canEdit}>Update</button>
-                                </div>
+                                <span className="stock-value">{product.stock}</span>
+                                {canEdit && <button className="stock-update" onClick={() => openStockModal(product)}>Update</button>}
                             </td>
                             <td onClick={(e) => e.stopPropagation()}><ToggleSwitch checked={product.active} onChange={() => handleToggle(product._id, 'active')} disabled={!canEdit} /></td>
                             <td onClick={(e) => e.stopPropagation()}><ToggleSwitch checked={product.adminVerified} onChange={() => handleToggle(product._id, 'adminVerified')} disabled={!canEdit} /></td>

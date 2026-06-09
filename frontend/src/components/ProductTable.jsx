@@ -5,10 +5,10 @@ import { MoreVertical } from 'react-feather';
 import UpdateStockModal from './UpdateStockModal';
 import ProductDetailsPanel from './ProductDetailsPanel';
 import AddProductModal from './AddProductModal';
+import ConfirmDialog from './ConfirmDialog';
 import neonLogo from '../assets/images/neonlogo.png';
 import wheatBag from '../assets/images/wheatbag.png';
 import { api } from '../api/client';
-import Swal from 'sweetalert2';
 
 
 
@@ -19,35 +19,28 @@ const ProductTable = ({ products, setProducts, setError, canEdit = true, categor
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [editProduct, setEditProduct] = useState(null);
     const [openMenuProductId, setOpenMenuProductId] = useState(null);
+    const [deleteConfirmProduct, setDeleteConfirmProduct] = useState(null);
 
     const openStockModal = (product) => { setStockProduct(product); setIsStockModalOpen(true); };
     const closeStockModal = () => { setIsStockModalOpen(false); setStockProduct(null); };
     const handleRowClick = (product) => { setSelectedProduct(product); setIsDetailsPanelOpen(true); };
     const closeDetailsPanel = () => { setIsDetailsPanelOpen(false); setSelectedProduct(null); };
 
-    const handleDeleteProduct = async (product) => {
+    const handleDeleteProduct = (product) => {
         if (!canEdit) return;
-        const result = await Swal.fire({
-            title: 'Are you sure?',
-            text: 'This product will be deleted permanently!',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Yes, delete it!',
-            cancelButtonText: 'Cancel',
-        });
-        if (result.isConfirmed) {
-            api.del(`/api/products/${product._id}`)
-                .then(() => {
-                    setProducts(products.filter((p) => p._id !== product._id));
-                    Swal.fire({ title: 'Deleted!', text: 'Product deleted successfully.', icon: 'success', timer: 1500, showConfirmButton: false });
-                })
-                .catch((err) => {
-                    Swal.fire({ title: 'Error!', text: err.message || 'Failed to delete product.', icon: 'error' });
-                    setError?.(err.message || 'Failed to delete product.');
-                });
+        setDeleteConfirmProduct(product);
+    };
+
+    const confirmDeleteProduct = async () => {
+        if (!deleteConfirmProduct) return;
+        try {
+            await api.del(`/api/products/${deleteConfirmProduct._id}`);
+            setProducts(products.filter((p) => p._id !== deleteConfirmProduct._id));
             closeDetailsPanel();
+        } catch (err) {
+            setError?.(err.message || 'Failed to delete product.');
+        } finally {
+            setDeleteConfirmProduct(null);
         }
     };
 
@@ -178,6 +171,14 @@ const ProductTable = ({ products, setProducts, setError, canEdit = true, categor
                     onDelete={handleDeleteProduct}
                     onEdit={(product) => { closeDetailsPanel(); setEditProduct(product); }}
                     canEdit={canEdit}
+                />
+            )}
+
+            {deleteConfirmProduct && (
+                <ConfirmDialog
+                    message={`Delete "${deleteConfirmProduct.nameEn}"? This cannot be undone.`}
+                    onConfirm={confirmDeleteProduct}
+                    onCancel={() => setDeleteConfirmProduct(null)}
                 />
             )}
 

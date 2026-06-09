@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { Search } from 'react-feather';
 import './Users.css';
-import './AdminToolbar.css';
 import UserTable from './UserTable';
 import AddUserModal from './AddUserModal';
 import UserDetailsPanel from './UserDetailsPanel';
@@ -131,16 +131,15 @@ const Users = () => {
       <div className="page-header">
         <h1>{activeTab}</h1>
         <div className="toolbar">
-          <input type="text" placeholder="Search by name, role..." value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} />
-            <select>
-                <option>City</option>
-            </select>
-            <select>
-                <option>Status</option>
-            </select>
-            {isAdmin && (
-              <button className="add-user-btn" onClick={openModal}>+ Add {activeTab}</button>
-            )}
+          <div className="toolbar-search">
+            <Search size={14} />
+            <input type="text" placeholder="Search by name, role..." value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} />
+          </div>
+          <select><option>City</option></select>
+          <select><option>Status</option></select>
+          {isAdmin && (
+            <button className="add-user-btn" onClick={openModal}>+ Add {activeTab === 'Sales Person' ? 'Sales Person' : activeTab.replace(/s$/, '')}</button>
+          )}
         </div>
       </div>
       {error && <div className="users-error">{error}</div>}

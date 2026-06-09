@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Search } from 'react-feather';
 import './Categories.css';
-import './AdminToolbar.css';
 import CategoryTable from './CategoryTable';
 import CreateCategory from './CreateCategory';
 import { api, isAdminUser } from '../api/client';
+import ConfirmDialog from './ConfirmDialog';
 
 const Categories = () => {
   const [showModal, setShowModal] = useState(false); // ← add this
@@ -16,6 +16,7 @@ const Categories = () => {
   const [selectedCity, setSelectedCity] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [error, setError] = useState('');
+  const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const isAdmin = isAdminUser();
 
   const loadCategories = async () => {
@@ -79,16 +80,16 @@ const Categories = () => {
     setShowModal(true);
   };
 
-  const handleDelete = async (categoryId) => {
-    if (!window.confirm('Delete this category?')) {
-      return;
-    }
+  const handleDelete = (categoryId) => setDeleteConfirmId(categoryId);
 
+  const confirmDelete = async () => {
     try {
-      await api.del(`/api/categories/${categoryId}`);
-      setCategories((prev) => prev.filter((category) => (category._id || category.id) !== categoryId));
+      await api.del(`/api/categories/${deleteConfirmId}`);
+      setCategories((prev) => prev.filter((category) => (category._id || category.id) !== deleteConfirmId));
+      setDeleteConfirmId(null);
     } catch (err) {
       setError(err.message || 'Failed to delete category.');
+      setDeleteConfirmId(null);
     }
   };
 
@@ -111,20 +112,20 @@ const Categories = () => {
 
   return (
     <div className="categories-container">
-      <div className="page-header">
-        <h1>Categories</h1>
-        <div className="toolbar">
-          <div className="search-input">
-            <Search size={16} className="search-icon" />
-            <input type="text" placeholder="Search by name, id..." value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} />
+      <div className="categories-topbar">
+        <h1 className="categories-heading">Categories</h1>
+        <div className="categories-toolbar">
+          <div className="categories-search">
+            <Search size={14} />
+            <input className="categories-search-input" type="text" placeholder="Search by name, id..." value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} />
           </div>
-          <select className="toolbar-select" value={selectedCity} onChange={(event) => setSelectedCity(event.target.value)}>
+          <select className="categories-filter-select" value={selectedCity} onChange={(event) => setSelectedCity(event.target.value)}>
             <option value="all">City</option>
             {cities.map((city) => (
               <option key={city._id || city.id} value={city._id || city.id}>{city.name}</option>
             ))}
           </select>
-          <select className="toolbar-select" value={selectedStatus} onChange={(event) => setSelectedStatus(event.target.value)}>
+          <select className="categories-filter-select" value={selectedStatus} onChange={(event) => setSelectedStatus(event.target.value)}>
             <option value="all">Status</option>
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
@@ -132,23 +133,12 @@ const Categories = () => {
             <option value="unverified">Unverified</option>
           </select>
           {(searchTerm || selectedCity !== 'all' || selectedStatus !== 'all') && (
-            <button
-              type="button"
-              className="clear-filters-btn"
-              onClick={() => {
-                setSearchTerm('');
-                setSelectedCity('all');
-                setSelectedStatus('all');
-              }}
-            >
+            <button type="button" className="categories-clear-btn" onClick={() => { setSearchTerm(''); setSelectedCity('all'); setSelectedStatus('all'); }}>
               Clear Filters
             </button>
           )}
           {isAdmin && (
-            <button className="add-category-btn" onClick={() => setShowModal(true)}> {/* ← add onClick */}
-              <span className="add-icon">+</span>
-              Create Category
-            </button>
+            <button className="categories-add-btn" onClick={() => setShowModal(true)}>+ Create Category</button>
           )}
         </div>
       </div>
@@ -156,17 +146,24 @@ const Categories = () => {
       {loading ? (
         <div className="page-loading">Loading...</div>
       ) : (
-        <CategoryTable
+        <div className="categories-table-wrap"><CategoryTable
           categories={visibleCategories}
           onSelect={handleSelect}
           onToggle={handleToggle}
           onEdit={handleEdit}
           onDelete={handleDelete}
           canEdit={isAdmin}
+        /></div>
+      )}
+
+      {deleteConfirmId && (
+        <ConfirmDialog
+          message="Delete this category? This cannot be undone."
+          onConfirm={confirmDelete}
+          onCancel={() => setDeleteConfirmId(null)}
         />
       )}
 
-      {/* ← modal renders only when showModal is true */}
       {showModal && isAdmin && (
         <CreateCategory
           onClose={() => {

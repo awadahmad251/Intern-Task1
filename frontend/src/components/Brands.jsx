@@ -6,6 +6,7 @@ import AddBrand from './AddBrand';
 import ToggleSwitch from './ToggleSwitch';
 import neonLogo from '../assets/images/neonlogo.png';
 import { api, isAdminUser } from '../api/client';
+import ConfirmDialog from './ConfirmDialog';
 
 const Brands = () => {
   const [showModal, setShowModal] = useState(false);
@@ -278,17 +279,12 @@ const Brands = () => {
         </table>
       </div>
 
-      {/* Delete confirm dialog */}
       {deleteConfirmId && (
-        <div className="brands-confirm-overlay" onClick={() => setDeleteConfirmId(null)}>
-          <div className="brands-confirm-box" onClick={(e) => e.stopPropagation()}>
-            <p className="brands-confirm-text">Delete this brand? This cannot be undone.</p>
-            <div className="brands-confirm-actions">
-              <button className="brands-cancel-btn" onClick={() => setDeleteConfirmId(null)}>Cancel</button>
-              <button className="brands-delete-btn" onClick={() => handleDeleteBrand(deleteConfirmId)}>Delete</button>
-            </div>
-          </div>
-        </div>
+        <ConfirmDialog
+          message="Delete this brand? This cannot be undone."
+          onConfirm={() => handleDeleteBrand(deleteConfirmId)}
+          onCancel={() => setDeleteConfirmId(null)}
+        />
       )}
 
       {/* Add Brand Modal */}

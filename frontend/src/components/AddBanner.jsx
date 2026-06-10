@@ -1,26 +1,23 @@
 import React, { useRef, useState } from 'react';
-import './AddBrand.css';
+import './AddBanner.css';
 import { uploads } from '../api/client';
 
-const AddBrand = ({ onClose, onSave, initialData = null, isEdit = false }) => {
-  const [nameEn, setNameEn] = useState(initialData?.nameEn || '');
-  const [nameUr, setNameUr] = useState(initialData?.nameUr || '');
-  const [commission, setCommission] = useState(initialData?.commission ?? '');
-  const [category, setCategory] = useState(initialData?.category?._id || initialData?.category || '');
+const AddBanner = ({ onClose, onSave, initialData = null, isEdit = false }) => {
+  const [altText, setAltText] = useState(initialData?.altText || '');
   const [city, setCity] = useState(initialData?.city?._id || initialData?.city || '');
-  const [logoUrl, setLogoUrl] = useState(initialData?.logoUrl || '');
+  const [imageUrl, setImageUrl] = useState(initialData?.imageUrl || '');
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
   const fileInputRef = useRef(null);
 
-  const handleFileChange = async (event) => {
-    const file = event.target.files?.[0];
+  const handleFileChange = async (e) => {
+    const file = e.target.files?.[0];
     if (!file) return;
     try {
       setUploading(true);
       setUploadError('');
       const result = await uploads.uploadImage(file);
-      setLogoUrl(result.url);
+      setImageUrl(result.url);
     } catch (err) {
       setUploadError(err.message || 'Upload failed.');
     } finally {
@@ -31,15 +28,15 @@ const AddBrand = ({ onClose, onSave, initialData = null, isEdit = false }) => {
   return (
     <div className="ab-overlay" onClick={onClose}>
       <div className="ab-modal" onClick={(e) => e.stopPropagation()}>
-        <h2 className="ab-title">{isEdit ? 'Edit Brand' : 'Add Brand'}</h2>
+        <h2 className="ab-title">{isEdit ? 'Edit Banner' : 'Add Banner'}</h2>
 
-        <p className="ab-thumb-label">Thumbnail</p>
+        <p className="ab-thumb-label">Banner Image</p>
         <div className="ab-upload-box" role="button" tabIndex={0}
           onClick={() => fileInputRef.current?.click()}
           onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInputRef.current?.click(); } }}
         >
-          {logoUrl ? (
-            <img src={logoUrl} alt="Logo preview" style={{ width: 56, height: 56, objectFit: 'contain', borderRadius: 6 }} />
+          {imageUrl ? (
+            <img src={imageUrl} alt="Banner preview" style={{ width: '100%', maxHeight: 120, objectFit: 'cover', borderRadius: 6 }} />
           ) : (
             <>
               <div className="ab-upload-icon">
@@ -59,19 +56,8 @@ const AddBrand = ({ onClose, onSave, initialData = null, isEdit = false }) => {
         {uploading && <p className="ab-upload-hint">Uploading...</p>}
         {uploadError && <p className="ab-upload-hint" style={{ color: '#d63c3c' }}>{uploadError}</p>}
 
-        <input className="ab-input" type="text" placeholder="Name in English" value={nameEn} onChange={(e) => setNameEn(e.target.value)} />
-        <input className="ab-input" type="text" placeholder="Name in Urdu" value={nameUr} onChange={(e) => setNameUr(e.target.value)} />
-        <input className="ab-input" type="number" placeholder="Commission (%)" value={commission} onChange={(e) => setCommission(e.target.value)} />
-        <input className="ab-input" type="text" placeholder="Logo URL (or upload above)" value={logoUrl} onChange={(e) => setLogoUrl(e.target.value)} />
-
-        <div className="ab-select-wrap">
-          <select className="ab-select" value={category} onChange={(e) => setCategory(e.target.value)}>
-            <option value="">Choose Category</option>
-            <option value="lahore">Lahore</option>
-            <option value="karachi">Karachi</option>
-            <option value="islamabad">Islamabad</option>
-          </select>
-        </div>
+        <input className="ab-input" type="text" placeholder="Image URL (or upload above)" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} />
+        <input className="ab-input" type="text" placeholder="Alternate Text" value={altText} onChange={(e) => setAltText(e.target.value)} />
 
         <div className="ab-select-wrap">
           <select className="ab-select" value={city} onChange={(e) => setCity(e.target.value)}>
@@ -84,7 +70,7 @@ const AddBrand = ({ onClose, onSave, initialData = null, isEdit = false }) => {
 
         <div className="ab-footer">
           <button className="ab-cancel-btn" onClick={onClose}>Cancel</button>
-          <button className="ab-save-btn" onClick={() => onSave?.({ nameEn, nameUr, commission, category, city, logoUrl })}>
+          <button className="ab-save-btn" onClick={() => onSave?.({ imageUrl, altText, city })}>
             {isEdit ? 'Save Changes' : 'Save'}
           </button>
         </div>
@@ -93,4 +79,4 @@ const AddBrand = ({ onClose, onSave, initialData = null, isEdit = false }) => {
   );
 };
 
-export default AddBrand;
+export default AddBanner;

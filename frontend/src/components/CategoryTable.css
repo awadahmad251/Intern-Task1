@@ -88,3 +88,72 @@
 .custom-checkbox.checked .tick {
   visibility: visible;
 }
+
+/* Three dots button */
+.category-action-cell {
+  position: relative;
+  text-align: right;
+}
+
+.category-dots {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  color: #888;
+  transition: background 0.15s, color 0.15s;
+}
+
+.category-dots:hover {
+  background: #f2f2f2;
+  color: #333;
+}
+
+/* Dropdown menu */
+.category-action-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #fff;
+  border: 1px solid #e4e4e4;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 100;
+  min-width: 110px;
+  overflow: hidden;
+}
+
+.category-action-menu button {
+  display: block;
+  width: 100%;
+  padding: 9px 14px;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 13px;
+  color: #333;
+  cursor: pointer;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.category-action-menu button:hover {
+  background: #f7f7f7;
+}
+
+.category-action-menu button:last-child {
+  color: #d63c3c;
+}
+
+.category-action-menu button:last-child:hover {
+  background: #fff5f5;
+}
+
+.table-empty {
+  text-align: center;
+  color: #aaa;
+  padding: 40px 0;
+  font-size: 14px;
+}

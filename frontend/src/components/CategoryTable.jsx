@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './CategoryTable.css';
 import ToggleSwitch from './ToggleSwitch';
 import { MoreVertical, Check } from 'react-feather';
@@ -12,6 +12,13 @@ const CustomCheckbox = ({ checked, onChange }) => (
 
 const CategoryTable = ({ categories, onSelect, onToggle, onEdit, onDelete, canEdit = true }) => {
   const [openMenuId, setOpenMenuId] = useState(null);
+
+  useEffect(() => {
+    if (!openMenuId) return;
+    const close = () => setOpenMenuId(null);
+    document.addEventListener('mousedown', close);
+    return () => document.removeEventListener('mousedown', close);
+  }, [openMenuId]);
 
   const toggleMenu = (event, categoryId) => {
     event.stopPropagation();

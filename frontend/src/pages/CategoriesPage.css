@@ -1,10 +1,13 @@
 .categories-page {
   display: flex;
-  background-color: #f7f7f7;
+  flex-direction: row;
+  background-color: #f5f6fa;
+  min-height: 100vh;
 }
 
 .main-content {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }

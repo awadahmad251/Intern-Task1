@@ -13,7 +13,7 @@
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-feather": "^2.0.10",
-    "react-router-dom": "^6.30.4",
+    "react-router-dom": "^6.28.0",
     "sweetalert2": "^11.26.25"
   },
   "devDependencies": {

@@ -1,126 +1,120 @@
 .categories-container {
-  padding: 20px;
-  background-color: #f9f9f9;
+  padding: 24px 28px;
+  font-family: 'Segoe UI', sans-serif;
+  flex: 1;
+  min-width: 0;
+  background: #f5f6fa;
 }
 
-.page-header {
+.categories-topbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 16px;
   margin-bottom: 20px;
-  padding: 12px 16px;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  gap: 16px;
 }
 
-.page-header h1 {
+.categories-heading {
   margin: 0;
-  font-size: 28px;
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a1a1a;
+  white-space: nowrap;
 }
 
-.toolbar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: nowrap;
-}
-
-.search-input {
+.categories-toolbar {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 12px;
-  border-radius: 10px;
-  border: 1px solid #e5e5e5;
-  background-color: #fff;
-  min-width: 220px;
 }
 
-.search-input input {
-  border: none;
-  outline: none;
-  font-size: 14px;
-}
-
-.search-icon {
-  color: #333;
-}
-
-.toolbar-select {
-  padding: 8px 12px;
-  border-radius: 10px;
-  border: 1px solid #e5e5e5;
-  background-color: #fff;
-  font-size: 14px;
-}
-
-.clear-filters-btn {
-  padding: 8px 12px;
-  border-radius: 10px;
-  border: 1px solid #e5e5e5;
-  background: #fff;
-  color: #444;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.clear-filters-btn:hover {
-  background: #f8f8f8;
-}
-
-.add-category-btn {
-  background-color: #ffe7dc;
-  color: #ff4500;
-  padding: 8px 14px;
-  border: 1px solid #ffd2c0;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
+.categories-search {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
+  background: #fff;
+  border: 1px solid #e4e4e4;
+  border-radius: 8px;
+  padding: 7px 12px;
+  width: 200px;
 }
 
-.add-icon {
-  font-size: 16px;
-  line-height: 1;
+.categories-search svg { color: #aaa; flex-shrink: 0; }
+
+.categories-search-input {
+  border: none;
+  outline: none;
+  font-size: 13px;
+  color: #333;
+  background: transparent;
+  width: 100%;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.categories-search-input::placeholder { color: #bbb; }
+
+.categories-filter-select {
+  padding: 7px 28px 7px 12px;
+  border: 1px solid #e4e4e4;
+  border-radius: 8px;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center;
+  -webkit-appearance: none;
+  appearance: none;
+  font-size: 13px;
+  color: #555;
+  font-family: 'Segoe UI', sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.categories-add-btn {
+  background: #ffeee7;
+  color: #ff5a2c;
+  padding: 7px 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Segoe UI', sans-serif;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.categories-add-btn:hover { background: #ffddd0; }
+
+.categories-clear-btn {
+  padding: 7px 12px;
+  background: #f5f5f5;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #666;
+  cursor: pointer;
+  font-family: 'Segoe UI', sans-serif;
+  white-space: nowrap;
 }
 
 .categories-error {
   background: #fff2f0;
   border: 1px solid #ffcabd;
   color: #a1402c;
-  padding: 10px 12px;
-  border-radius: 6px;
-  margin-bottom: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 14px;
+  font-size: 13px;
+}
+
+.categories-table-wrap {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #efefef;
+  overflow-x: auto;
+}
+
+.page-loading {
+  text-align: center;
+  padding: 48px;
+  color: #aaa;
   font-size: 14px;
-}
-
-@media (max-width: 1100px) {
-  .page-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .toolbar {
-    width: 100%;
-    flex-wrap: wrap;
-  }
-}
-
-@media (max-width: 640px) {
-  .toolbar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .search-input,
-  .toolbar-select,
-  .clear-filters-btn,
-  .add-category-btn {
-    width: 100%;
-  }
 }
